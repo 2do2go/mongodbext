@@ -1,7 +1,7 @@
 
 var expect = require('expect.js'),
 	Client = require('mongodb').MongoClient,
-	Collection = require('../index').Collection;
+	Collection = require('../lib/mongodbext').Collection;
 
 var collection;
 
