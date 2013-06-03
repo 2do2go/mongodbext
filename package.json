@@ -1,6 +1,6 @@
 {
 	"name": "mongodbext",
-	"description": "Quick and dirty (monkey patching) extensions for mongodb-native",
+	"description": "Extension for node-mongodb-native that allows to add hooks on write operations, such as create, update, remove",
 	"version": "0.1.0",
 	"repository": {
 		"type": "git",

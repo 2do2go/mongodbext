@@ -1,7 +1,6 @@
 
 var expect = require('expect.js'),
 	Client = require('mongodb').MongoClient,
-	Server = require('mongodb').Server,
 	Collection = require('../index').Collection;
 
 var collection;
