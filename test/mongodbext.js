@@ -3,19 +3,27 @@ var expect = require('expect.js'),
 	Client = require('mongodb').MongoClient,
 	Collection = require('../lib/mongodbext').Collection;
 
-var collection;
+var db, collection;
 
 describe('Mongo connect', function() {
 
 	it('Connect to mongo through MongoClient in a new way!', function(done) {
-		Client.connect('mongodb://localhost:27017/mongodbext_test', function(err, db) {
+		Client.connect('mongodb://localhost:27017/mongodbext_test', function(err, _db) {
 			expect(err).to.not.be.ok();
-			collection = new Collection(db, 'test');
+			db = _db;
+			collection = new Collection(_db, 'test');
 			done();
 		});
 	});
 
-})
+});
+
+var cleanAll = function(done) {
+	collection.remove(function(err) {
+		if (err) done(err);
+		db.collection('__sequences').remove(done);
+	});
+};
 
 describe('Insert hooks', function() {
 
@@ -24,6 +32,11 @@ describe('Insert hooks', function() {
 			a: 1,
 			b: 2
 		}, done);
+	});
+
+	it('Add plugin for collection that will be modify _id field', function(done) {
+		collection.addPlugin('sequenceId');
+		done();
 	});
 
 	it('Add hook on before insert that will add field', function(done) {
@@ -43,6 +56,8 @@ describe('Insert hooks', function() {
 			expect(objs).to.be.an('array');
 			expect(objs).to.have.length(1);
 			expect(objs[0]).to.be.ok();
+			// check plugin work, _id should be modified
+			expect(objs[0]._id).to.be(1);
 			expect(objs[0].a).to.be(2);
 			expect(objs[0].c).to.be(100);
 			done();
@@ -56,6 +71,7 @@ describe('Insert hooks', function() {
 			expect(objs).to.have.length(2);
 			for (var i = 0; i < 2; i++) {
 				expect(objs[i]).to.be.ok();
+				expect(objs[i]._id).to.be(2 + i);
 				expect(objs[i].a).to.be(i + 3);
 				expect(objs[i].c).to.be(100);
 			}
@@ -107,9 +123,7 @@ describe('Insert hooks', function() {
 		});
 	});
 
-	it('Drop all items from collection', function(done) {
-		collection.remove(done);
-	});
+	it('Clean after insert tests', cleanAll);
 
 });
 
@@ -174,9 +188,7 @@ describe('Update hooks', function() {
 		});
 	});
 
-	it('Drop all items from collection', function(done) {
-		collection.remove(done);
-	});
+	it('Drop all items from collection', cleanAll);
 
 });
 
@@ -252,7 +264,10 @@ describe('Remove hooks', function() {
 	});
 
 	it('Remove all items from collection', function(done) {
-		collection.remove({a: {$exists: true}}, done);
+		collection.remove({a: {$exists: true}}, function(err) {
+			if (err) return done(err);
+			db.collection('__sequences').remove(done);
+		});
 	});
 
 });
