@@ -7,7 +7,7 @@ var db, collection;
 
 describe('Mongo connect', function() {
 
-	it('Connect to mongo through MongoClient in a new way!', function(done) {
+	it('Connect to mongo', function(done) {
 		Client.connect('mongodb://localhost:27017/mongodbext_test', function(err, _db) {
 			expect(err).to.not.be.ok();
 			db = _db;
@@ -19,10 +19,7 @@ describe('Mongo connect', function() {
 });
 
 var cleanAll = function(done) {
-	collection.remove(function(err) {
-		if (err) done(err);
-		db.collection('__sequences').remove(done);
-	});
+	collection.remove(done);
 };
 
 describe('Insert hooks', function() {
@@ -32,11 +29,6 @@ describe('Insert hooks', function() {
 			a: 1,
 			b: 2
 		}, done);
-	});
-
-	it('Add plugins', function(done) {
-		collection.addPlugins('sequenceId', 'createDate', 'updateDate', 'version');
-		done();
 	});
 
 	it('Add hook on before insert that will add field', function(done) {
@@ -56,8 +48,6 @@ describe('Insert hooks', function() {
 			expect(objs).to.be.an('array');
 			expect(objs).to.have.length(1);
 			expect(objs[0]).to.be.ok();
-			// check plugin work, _id should be modified
-			expect(objs[0]._id).to.be(1);
 			expect(objs[0].a).to.be(2);
 			expect(objs[0].c).to.be(100);
 			done();
@@ -71,7 +61,6 @@ describe('Insert hooks', function() {
 			expect(objs).to.have.length(2);
 			for (var i = 0; i < 2; i++) {
 				expect(objs[i]).to.be.ok();
-				expect(objs[i]._id).to.be(2 + i);
 				expect(objs[i].a).to.be(i + 3);
 				expect(objs[i].c).to.be(100);
 			}
@@ -103,8 +92,6 @@ describe('Insert hooks', function() {
 	it('Add after hook that will be deleting "_id" on document insert', function(done) {
 		collection.on('afterInsert', function(params, callback) {
 			params.objs = params.objs.map(function(obj) {
-				// check createDate plugin
-				expect(obj.createDate).to.be.ok();
 				delete obj._id;
 				return obj;
 			});
@@ -159,10 +146,6 @@ describe('Update hooks', function() {
 				expect(objs).to.have.length(2);
 				objs.forEach(function(obj) {
 					expect(obj.c).to.be(3);
-					// check updateDate plugin
-					expect(obj.updateDate).to.be.ok();
-					// check version plugin
-					expect(obj.version).to.be.equal(2);
 				});
 				done();
 			});
@@ -178,7 +161,6 @@ describe('Update hooks', function() {
 			expect(obj).to.be.an('object');
 			expect(obj._id).to.not.be.ok();
 			expect(obj.c).to.be(5);
-			expect(obj.updateDate).to.be.ok();
 			done();
 		});
 	});
