@@ -34,8 +34,8 @@ describe('Insert hooks', function() {
 		}, done);
 	});
 
-	it('Add plugin for collection that will be modify _id field', function(done) {
-		collection.addPlugin('sequenceId');
+	it('Add plugins', function(done) {
+		collection.addPlugins('sequenceId', 'createDate', 'updateDate', 'version');
 		done();
 	});
 
@@ -103,6 +103,8 @@ describe('Insert hooks', function() {
 	it('Add after hook that will be deleting "_id" on document insert', function(done) {
 		collection.on('afterInsert', function(params, callback) {
 			params.objs = params.objs.map(function(obj) {
+				// check createDate plugin
+				expect(obj.createDate).to.be.ok();
 				delete obj._id;
 				return obj;
 			});
@@ -135,16 +137,6 @@ describe('Update hooks', function() {
 		collection.insert(testData, done);
 	});
 
-	it('Add before update hook that will be adding updateDate field', function(done) {
-		collection.on('beforeUpdate', function(params, callback) {
-			var $set = params.modifier.$set || {};
-			$set.updateDate = new Date().getTime();
-			params.modifier.$set = $set;
-			callback();
-		});
-		done();
-	});
-
 	it('Add after hook that will only be working on findAndModify', function(done) {
 		collection.on('afterUpdate', function(params, callback) {
 			if (params.obj) {
@@ -167,7 +159,10 @@ describe('Update hooks', function() {
 				expect(objs).to.have.length(2);
 				objs.forEach(function(obj) {
 					expect(obj.c).to.be(3);
+					// check updateDate plugin
 					expect(obj.updateDate).to.be.ok();
+					// check version plugin
+					expect(obj.version).to.be.equal(2);
 				});
 				done();
 			});
