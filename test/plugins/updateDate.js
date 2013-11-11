@@ -47,6 +47,19 @@ describe('Check updateDate plugin', function() {
 		});
 	});
 
+	it('Check full object udpate', function(done) {
+		collection.update({a: 1}, {a: 1, b: 2, update: 'single'}, function(err) {
+			expect(err).not.to.be.ok();
+			collection.find({update: 'single'}).toArray(function(err, objs) {
+				expect(err).not.to.be.ok();
+				expect(objs.length).to.be.equal(1);
+				var obj = objs[0];
+				expect(obj.updateDate).to.be.ok();
+				done();
+			});
+		});
+	});
+
 	it('Check multi update', function(done) {
 		collection.update({a: {$in: [1, 2]}}, {$set: {update: 'multi'}},
 			{multi: true},
