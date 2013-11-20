@@ -16,7 +16,7 @@ Create collection with exported Collection constructor and the add hooks on it.
 Hook accepts object variable and callback function. Content of varible is depended
 on the hook type, also afterHook varible contains all fields from beforeHook varible:
 
-* `beforeInsert` and 'afterInsert':
+* `beforeInsert` and `afterInsert`:
 	* objs: array of inserted objects
 	* options: options for insert
 * `beforeUpdate`:
