@@ -12,9 +12,9 @@ npm install mongodbext
 
 ## Usage
 
-Create collection with exported Collection constructor and the add hooks on it.
+Create collection with exported `Collection` constructor and the add hooks on it.
 Hook accepts object variable and callback function. Content of varible is depended
-on the hook type, also afterHook varible contains all fields from beforeHook varible:
+on the hook type, also **afterHook varible contains all fields from beforeHook varible**:
 
 * `beforeInsert` and `afterInsert`:
 	* objs: array of inserted objects
@@ -27,11 +27,11 @@ on the hook type, also afterHook varible contains all fields from beforeHook var
 	* count: count of object that have been updated
 	* obj: only for findAndModify operation. Object before or after update (depends on `options.new` field)
 * `beforeRemove`:
-	* `condition`: selector for objects which should be deleted
-	* `options`: options for remove
+	* condition: selector for objects which should be deleted
+	* options: options for remove
 * `afterRemove`:
-	* `count`: count of objects that have been removed
-	* `obj`: for findAndModify operation only. Object before remove operation
+	* count: count of objects that have been removed
+	* obj: for findAndModify operation only. Object before remove operation
 
 More information about how hooks work can be found on [mhook documentation page](https://github.com/okv/node-mhook)
 
