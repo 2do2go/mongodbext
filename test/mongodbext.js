@@ -248,3 +248,5 @@ describe('Remove hooks', function() {
 	});
 
 });
+
+require('./plugins');
