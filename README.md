@@ -1,7 +1,7 @@
 # MongodbExt
 
 This is extension for [node-mongodb-native](https://github.com/mongodb/node-mongodb-native)
-that imports pathced collection object and allows to add hooks on write
+that imports patched collection object and allows to add hooks on write
 operations, such as insert, update and remove
 
 ## Installation
@@ -12,9 +12,9 @@ npm install mongodbext
 
 ## Usage
 
-Create collection with exported `Collection` constructor and the add hooks on it.
-Hook accepts object variable and callback function. Content of varible is depended
-on the hook type, also **afterHook varible contains all fields from beforeHook varible**:
+Create collection with exported `Collection` constructor and add hooks on it.
+Hook accepts object variable and callback function. Content of variable is depended
+on the hook type, also **afterHook varible contains all fields from beforeHook variable**:
 
 * `beforeInsert` and `afterInsert`:
 	* objs: array of inserted objects
