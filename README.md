@@ -2,7 +2,8 @@
 
 This is extension for [node-mongodb-native](https://github.com/mongodb/node-mongodb-native)
 that imports patched collection object and allows to add hooks on write
-operations, such as insert, update and remove
+operations, such as insert, update and remove. It also allows to create collection
+that will throw error in findOne method if no item had been returned.
 
 ## Installation
 
@@ -34,6 +35,10 @@ on the hook type, also **afterHook varible contains all fields from beforeHook v
 	* obj: for findAndModify operation only. Object before remove operation
 
 More information about how hooks work can be found on [mhook documentation page](https://github.com/okv/node-mhook)
+
+To create collection that will throw error in findOne if no item had been returned
+option **throwFindOneError**. If in some cases you don't want to throwing error you
+should pass option noError in findOne query.
 
 ## Example
 
@@ -68,6 +73,21 @@ Client.connect('mongodb://localhost:27017/mongodbext_example', function(err, db)
 	collection.insert({a: 1, b: 1}, function(err, objs) {
 		objs[0]._id; // should be undefined
 		objs[0].c; //should be random number
+	});
+
+	// create collection that will throw error if findOne hasn't find anything
+	var findOneErrorCollection = nee Collection(db, 'fineOneTest', null, {
+		throwFindOneError: true
+	});
+
+	findOneErrorCollection.findOne({a: 1}, function(err, item) {
+		// Should throw error, because collection is empty
+		console.log('Error:', err);
+	});
+
+	findOneErrorCollection.findOne({a: 1}, {noError: true}, function(err, item) {
+		// Shouldn't throw any error though collection is empty. It's because we passed noError option
+		console.log('Error:', err);
 	});
 });
 ```

@@ -249,4 +249,80 @@ describe('Remove hooks', function() {
 
 });
 
+describe('Find one', function() {
+	var findOneWithErrorCollection,
+		findOneCollection;
+
+	it('Create collection without option', function(done) {
+		findOneCollection = new Collection(db, 'findOneTest');
+		done();
+	});
+	it('Create collection with throwFindOneError option', function(done) {
+		findOneWithErrorCollection = new Collection(db, 'findOneErrTest', null, {
+			throwFindOneError: true
+		});
+		done();
+	});
+	var findOneTestData = {a: 1};
+	it('Create test data in collection with option', function(done) {
+		findOneWithErrorCollection.insert(findOneTestData, done);
+	});
+	it('Create test data in collection without option', function(done) {
+		findOneCollection.insert(findOneTestData, done);
+	});
+	it('Test getting existing item from collection with option', function(done) {
+		findOneWithErrorCollection.findOne({a: 1}, {_id: 0}, function(err, item) {
+			expect(err).not.to.be.ok();
+			expect(item).to.be.ok();
+			expect(item).to.be.eql({a: 1});
+			done();
+		});
+	});
+	it('Test getting existing item from collection without option', function(done) {
+		findOneCollection.findOne({a: 1}, {_id: 0}, function(err, item) {
+			expect(err).not.to.be.ok();
+			expect(item).to.be.ok();
+			expect(item).to.be.eql({a: 1});
+			done();
+		});
+	});
+	it('Test getting existing item with noError option from collection with option', function(done) {
+		findOneWithErrorCollection.findOne({
+			a: 1
+		}, {_id: 0}, {noError: true}, function(err, item) {
+			expect(err).not.to.be.ok();
+			expect(item).to.be.ok();
+			expect(item).to.be.eql({a: 1});
+			done();
+		});
+	});
+	it('Test getting nonexisting item with noError option from collection with option', function(done) {
+		findOneWithErrorCollection.findOne({a: 2}, {
+			noError: true
+		}, function(err, item) {
+			expect(err).not.to.be.ok();
+			expect(item).not.to.be.ok();
+			done();
+		});
+	});
+	it('Test getting nonexisting item without noError option from collection with option', function(done) {
+		findOneWithErrorCollection.findOne({a: 2}, function(err, item) {
+			expect(err).to.be.ok();
+			expect(item).not.to.be.ok();
+			expect(err.message).to.be(
+				'Error in collection findOneErrTest: can\'t find item with ' +
+				'selector {"a":2}'
+			);
+			done();
+		});
+	});
+	it('Test getting nonexisting item from collection without option', function(done) {
+		findOneCollection.findOne({a: 2}, function(err, item) {
+			expect(err).not.to.be.ok();
+			expect(item).not.to.be.ok();
+			done();
+		});
+	});
+});
+
 require('./plugins');
