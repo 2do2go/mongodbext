@@ -1,81 +1,161 @@
+'use strict';
+
 var expect = require('expect.js'),
-	Client = require('mongodb').MongoClient,
-	Collection = require('../../lib/mongodbext').Collection;
+	Steppy = require('twostep').Steppy,
+	helpers = require('../helpers');
 
-var db, collection;
+describe('Test updateDate plugin', function() {
+	var collection;
 
-describe('Mongo connect', function() {
-
-	it('Connect to mongo', function(done) {
-		Client.connect('mongodb://localhost:27017/mongodbext_test', function(err, _db) {
-			expect(err).to.not.be.ok();
-			db = _db;
-			collection = new Collection(_db, 'test');
-			done();
-		});
+	before(function(done) {
+		Steppy(
+			function() {
+				helpers.dbConnect(this.slot());
+			},
+			function() {
+				collection = helpers.getCollection();
+				this.pass(null);
+			},
+			done
+		);
 	});
 
-});
-
-var cleanAll = function(done) {
-	collection.remove(done);
-};
-
-describe('Check updateDate plugin', function() {
-	it('Add plugin', function(done) {
+	it('add plugin, should be ok', function() {
 		collection.addPlugin('updateDate');
-		done();
 	});
 
-	it('Insert some objects for test', function(done) {
-		collection.insert([{a: 1, b: 2}, {a: 2, b: 3}], function(err, objs) {
-			expect(err).not.to.be.ok();
-			done();
-		});
+	it('make insertOne, should be ok', function(done) {
+		var entity = helpers.getEntity();
+		Steppy(
+			function() {
+				collection.insertOne(entity, this.slot());
+			},
+			function() {
+				collection.findOne(this.slot());
+			},
+			function(err, result) {
+				expect(result).ok();
+				expect(result).key('updateDate');
+				expect(result.updateDate).a('number');
+
+				helpers.cleanDb(this.slot());
+			},
+			done
+		);
 	});
 
-	it('Check single update', function(done) {
-		collection.update({a: 1}, {$set: {update: 'single'}}, function(err) {
-			expect(err).not.to.be.ok();
-			collection.find({update: 'single'}).toArray(function(err, objs) {
-				expect(err).not.to.be.ok();
-				expect(objs.length).to.be.equal(1);
-				var obj = objs[0];
-				expect(obj.updateDate).to.be.ok();
-				done();
-			});
-		});
+	it('make insertMany, should be ok', function(done) {
+		var entities = [helpers.getEntity(), helpers.getEntity()];
+		Steppy(
+			function() {
+				collection.insertMany(entities, this.slot());
+			},
+			function() {
+				collection.find().sort({_id: 1}).toArray(this.slot());
+			},
+			function(err, result) {
+				expect(result).ok();
+				result.forEach(function(obj, ind) {
+					expect(obj).key('updateDate');
+					expect(obj.updateDate).a('number');
+				});
+
+				helpers.cleanDb(this.slot());
+			},
+			done
+		);
 	});
 
-	it('Check full object udpate', function(done) {
-		collection.update({a: 1}, {a: 1, b: 2, update: 'single'}, function(err) {
-			expect(err).not.to.be.ok();
-			collection.find({update: 'single'}).toArray(function(err, objs) {
-				expect(err).not.to.be.ok();
-				expect(objs.length).to.be.equal(1);
-				var obj = objs[0];
-				expect(obj.updateDate).to.be.ok();
-				done();
-			});
-		});
+	it('make updateOne, should be ok', function(done) {
+		var entity = helpers.getEntity();
+		Steppy(
+			function() {
+				collection.insertOne(entity, this.slot());
+			},
+			function() {
+				var stepCallback = this.slot();
+				setTimeout(function() {
+					collection.updateOne({
+						_id: entity._id
+					}, helpers.getModifier(), stepCallback);
+				}, 10);
+			},
+			function() {
+				collection.findOne(this.slot());
+			},
+			function(err, result) {
+				expect(result).ok();
+				expect(result).key('updateDate');
+				expect(result.updateDate).a('number');
+				expect(result.updateDate).not.equal(entity.updateDate);
+
+				helpers.cleanDb(this.slot());
+			},
+			done
+		);
 	});
 
-	it('Check multi update', function(done) {
-		collection.update({a: {$in: [1, 2]}}, {$set: {update: 'multi'}},
-			{multi: true},
-			function(err) {
-			expect(err).not.to.be.ok();
-			collection.find({update: 'multi'}).toArray(function(err, objs) {
-				expect(err).not.to.be.ok();
-				expect(objs.length).to.be.equal(2);
-				expect(objs[0].updateDate).to.be.ok();
-				expect(objs[1].updateDate).to.be.ok();
-				done();
-			});
-		});
+	it('make updateMany, should be ok', function(done) {
+		var entities = [helpers.getEntity(), helpers.getEntity()];
+		Steppy(
+			function() {
+				collection.insertMany(entities, this.slot());
+			},
+			function() {
+				var stepCallback = this.slot();
+				setTimeout(function() {
+					collection.updateMany({
+						_id: {
+							$in: [entities[0]._id, entities[1]._id]
+						}
+					}, helpers.getModifier(), stepCallback);
+				}, 10);
+			},
+			function() {
+				collection.find().sort({_id: 1}).toArray(this.slot());
+			},
+			function(err, result) {
+				expect(result).ok();
+				result.forEach(function(obj, ind) {
+					expect(obj).key('updateDate');
+					expect(obj.updateDate).a('number');
+					expect(obj.updateDate).not.equal(entities[ind].updateDate);
+				});
+
+				helpers.cleanDb(this.slot());
+			},
+			done
+		);
 	});
 
-	it('Clear collection', function(done) {
-		cleanAll(done);
+	it('make replaceOne, should be ok', function(done) {
+		var entity = helpers.getEntity();
+		Steppy(
+			function() {
+				collection.insertOne(entity, this.slot());
+			},
+			function() {
+				var stepCallback = this.slot();
+				setTimeout(function() {
+					collection.replaceOne({
+						_id: entity._id
+					}, helpers.getReplacement(), stepCallback);
+				}, 20);
+			},
+			function() {
+				collection.findOne(this.slot());
+			},
+			function(err, result) {
+				expect(result).ok();
+				expect(result).key('updateDate');
+				expect(result.updateDate).a('number');
+				expect(result.updateDate).not.equal(entity.updateDate);
+
+				helpers.cleanDb(this.slot());
+			},
+			done
+		);
 	});
+
+	after(helpers.cleanDb);
 });
