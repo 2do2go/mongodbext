@@ -14,12 +14,15 @@
 	},
 	"main": "./lib/mongodbext",
 	"dependencies": {
-		"mhook": "0.1.1",
-		"mongodb": ">=2.1.2"
+		"mhook": "0.1.1"
+	},
+	"peerDependencies": {
+		"mongodb": ">=2.0"
 	},
 	"devDependencies": {
 		"mocha": "2.0.1",
 		"expect.js": "0.3.1",
-		"twostep": "0.4.1"
+		"twostep": "0.4.1",
+		"mongodb": ">=2.0"
 	}
 }

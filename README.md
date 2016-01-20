@@ -13,6 +13,60 @@ npm install mongodbext
 
 ## Usage
 
+#### new Collection(db, collectionName, options)
+
+Creates new instance of collection
+
+###### Parameters:
+
+All parameters described as name, type, default value.
+
+* **db**, object. Database instance
+
+* **collectionName**, string. Name of collection.
+
+* **options**, object, null. Optional settings.
+
+	* **changeDataMethods**, Array<string>, null. Set supported data changing methods. If not set all methods are supported.
+
+###### Returns:
+
+Instance of collection
+
+###### Examples:
+
+``` js
+var MongoClient = require('mongodb').MongoClient,
+	Collection = require('mongodbext').Collection,
+	expect = require('expect.js');
+
+MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+	var collection = new Collection(db, 'constructorExample');
+
+	collection.insertOne({a: 1}, function(err) {
+		expect(err).not.ok();
+	});
+});
+```
+
+``` js
+var MongoClient = require('mongodb').MongoClient,
+	Collection = require('mongodbext').Collection,
+	expect = require('expect.js');
+
+MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+	var collection = new Collection(db, 'constructorExample', {
+		changeDataMethods: ['insertMany']
+	});
+
+	collection.insertOne({a: 1}, function(err) {
+		expect(err).ok();
+		expect(err.name).equal('MongoError');
+		expect(err.message).equal('Method "insertOne" for collection "test" is not supported');
+	});
+});
+```
+
 ### Collection methods
 
 All methods that marked as deprecated, such as insert, update etc., except for findAndModify,
@@ -1061,7 +1115,3 @@ Add createDate to each inserted to collection document
 ###### updateDate
 
 Add updateDate to each updated or replaces document
-
-###### unsupportedMethods
-
-Make passed methods to throw MethodUnsupported errors. Useful when some methods are not welcomed in project.

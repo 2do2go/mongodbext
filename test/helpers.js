@@ -26,6 +26,7 @@ exports.dbConnect = function(callback) {
 				dbConnected = true;
 			}
 
+			this.pass(db);
 			exports.cleanDb(this.slot());
 		},
 		callback
