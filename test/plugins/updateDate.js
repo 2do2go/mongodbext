@@ -128,6 +128,46 @@ describe('Test updateDate plugin', function() {
 		);
 	});
 
+	it('make findOneAndUpsert, should be ok', function(done) {
+		var entity = helpers.getEntity();
+		Steppy(
+			function() {
+				collection.findOneAndUpsert({
+					_id: entity._id
+				}, helpers.getModifier(), this.slot());
+			},
+			function() {
+				collection.findOne(this.slot());
+			},
+			function(err, result) {
+				expect(result).ok();
+				expect(result).key('updateDate');
+				expect(result.updateDate).a('number');
+
+				entity = result;
+
+				var stepCallback = this.slot();
+				setTimeout(function() {
+					collection.findOneAndUpsert({
+						_id: entity._id
+					}, helpers.getModifier(), stepCallback);
+				}, 10);
+			},
+			function() {
+				collection.findOne(this.slot());
+			},
+			function(err, result) {
+				expect(result).ok();
+				expect(result).key('updateDate');
+				expect(result.updateDate).a('number');
+				expect(result.updateDate).not.equal(entity.updateDate);
+
+				helpers.cleanDb(this.slot());
+			},
+			done
+		);
+	});
+
 	it('make replaceOne, should be ok', function(done) {
 		var entity = helpers.getEntity();
 		Steppy(
