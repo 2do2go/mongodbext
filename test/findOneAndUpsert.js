@@ -100,7 +100,7 @@ describe('Test findOneAndUpsert', function() {
 				function() {
 					collection.findOneAndUpsert(condition, modifier, this.slot());
 				},
-				function(err, result) {				
+				function(err, result) {
 					expect(result).ok();
 					expect(result).eql(entity);
 					entity.a++;
@@ -118,7 +118,7 @@ describe('Test findOneAndUpsert', function() {
 						returnDocsOnly: true
 					}, this.slot());
 				},
-				function(err, result) {				
+				function(err, result) {
 					expect(result).ok();
 					expect(result).eql(entity);
 					entity.a++;
@@ -136,7 +136,7 @@ describe('Test findOneAndUpsert', function() {
 						returnDocsOnly: false
 					}, this.slot());
 				},
-				function(err, result) {				
+				function(err, result) {
 					expect(result).ok();
 					expect(result).only.keys(
 						'value', 'lastErrorObject',	'ok'
@@ -211,7 +211,7 @@ describe('Test findOneAndUpsert', function() {
 			);
 		});
 
-		it('should be ok with after params', function(done) {
+		it('should be ok with after params, when inserted', function(done) {
 			var entity = helpers.getEntity(),
 				hookEntity = helpers.getEntity(),
 				condition = {
@@ -248,9 +248,48 @@ describe('Test findOneAndUpsert', function() {
 			);
 		});
 
+		it('should be ok with after params, when updated', function(done) {
+			var entity = helpers.getEntity(),
+				hookEntity = helpers.getEntity(),
+				condition = {
+					_id: entity._id
+				},
+				modifier = helpers.getModifier(),
+				collection = helpers.getCollection({
+					afterUpsertOne: function(params, callback) {
+						expect(params.condition).eql(condition);
+						expect(params.modifier).eql(modifier);
+						expect(params.options).eql({});
+						expect(params.obj).eql(entity);
+						expect(params.isUpdated).equal(true);
+						collection.insertOne(hookEntity, callback);
+					}
+				});
+			Steppy(
+				function() {
+					collection.insertOne(entity, this.slot());
+				},
+				function() {
+					collection.findOneAndUpsert(condition, modifier, this.slot());
+				},
+				function() {
+					collection.find().sort({_id: 1}).toArray(this.slot());
+				},
+				function(err, result) {
+
+					expect(result).ok();
+					expect(result).length(2);
+					expect(result[0]._id).eql(entity._id);
+					expect(result[1]).eql(hookEntity);
+
+					helpers.cleanDb(this.slot());
+				},
+				done
+			);
+		});
+
 		after(helpers.cleanDb);
 	});
 
 	after(helpers.cleanDb);
 });
-	
