@@ -10,7 +10,8 @@
 		"mongodb", "db", "hook", "trigger"
 	],
 	"scripts": {
-		"test": "mocha --reporter spec --bail --recursive"
+		"test": "mocha --reporter spec --bail --recursive",
+		"travis-test": "node scripts/mongodbInit.js && npm run test"
 	},
 	"main": "./lib/mongodbext",
 	"dependencies": {
@@ -23,6 +24,8 @@
 		"mocha": "2.0.1",
 		"expect.js": "0.3.1",
 		"twostep": "0.4.1",
-		"mongodb": ">=2.0"
+		"mongodb": ">=2.0",
+		"mongodb-topology-manager": "1.0.6",
+		"mongodb-version-manager": "1.0.4"
 	}
 }
