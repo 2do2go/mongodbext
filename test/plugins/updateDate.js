@@ -66,35 +66,6 @@ describe('Test updateDate plugin', function() {
 		);
 	});
 
-	it('make updateOne, should be ok', function(done) {
-		var entity = helpers.getEntity();
-		Steppy(
-			function() {
-				collection.insertOne(entity, this.slot());
-			},
-			function() {
-				var stepCallback = this.slot();
-				setTimeout(function() {
-					collection.updateOne({
-						_id: entity._id
-					}, helpers.getModifier(), stepCallback);
-				}, 10);
-			},
-			function() {
-				collection.findOne(this.slot());
-			},
-			function(err, result) {
-				expect(result).ok();
-				expect(result).key('updateDate');
-				expect(result.updateDate).a('number');
-				expect(result.updateDate).not.equal(entity.updateDate);
-
-				helpers.cleanDb(this.slot());
-			},
-			done
-		);
-	});
-
 	it('make updateMany, should be ok', function(done) {
 		var entities = [helpers.getEntity(), helpers.getEntity()];
 		Steppy(
@@ -121,46 +92,6 @@ describe('Test updateDate plugin', function() {
 					expect(obj.updateDate).a('number');
 					expect(obj.updateDate).not.equal(entities[ind].updateDate);
 				});
-
-				helpers.cleanDb(this.slot());
-			},
-			done
-		);
-	});
-
-	it('make findOneAndUpsert, should be ok', function(done) {
-		var entity = helpers.getEntity();
-		Steppy(
-			function() {
-				collection.findOneAndUpsert({
-					_id: entity._id
-				}, helpers.getModifier(), this.slot());
-			},
-			function() {
-				collection.findOne(this.slot());
-			},
-			function(err, result) {
-				expect(result).ok();
-				expect(result).key('updateDate');
-				expect(result.updateDate).a('number');
-
-				entity = result;
-
-				var stepCallback = this.slot();
-				setTimeout(function() {
-					collection.findOneAndUpsert({
-						_id: entity._id
-					}, helpers.getModifier(), stepCallback);
-				}, 10);
-			},
-			function() {
-				collection.findOne(this.slot());
-			},
-			function(err, result) {
-				expect(result).ok();
-				expect(result).key('updateDate');
-				expect(result.updateDate).a('number');
-				expect(result.updateDate).not.equal(entity.updateDate);
 
 				helpers.cleanDb(this.slot());
 			},
@@ -195,6 +126,84 @@ describe('Test updateDate plugin', function() {
 			},
 			done
 		);
+	});
+
+	describe('Methods, which accept modifier or replacement', function() {
+		var getUpdateObject = function(type) {
+			return type === 'modifier' ? helpers.getModifier() :
+				helpers.getReplacement();
+		};
+
+		['modifier', 'replacement'].forEach(function(type) {
+			it('updateOne with ' + type + ', should be ok', function(done) {
+				var entity = helpers.getEntity();
+				Steppy(
+					function() {
+						collection.insertOne(entity, this.slot());
+					},
+					function() {
+						var stepCallback = this.slot();
+						setTimeout(function() {
+							collection.updateOne({
+								_id: entity._id
+							}, getUpdateObject(type), stepCallback);
+						}, 10);
+					},
+					function() {
+						collection.findOne(this.slot());
+					},
+					function(err, result) {
+						expect(result).ok();
+						expect(result).key('updateDate');
+						expect(result.updateDate).a('number');
+						expect(result.updateDate).not.equal(entity.updateDate);
+
+						helpers.cleanDb(this.slot());
+					},
+					done
+				);
+			});
+
+			it('findOneAndUpsert with ' + type + ', should be ok', function(done) {
+				var entity = helpers.getEntity();
+				Steppy(
+					function() {
+						collection.findOneAndUpsert({
+							_id: entity._id
+						}, getUpdateObject(type), this.slot());
+					},
+					function() {
+						collection.findOne(this.slot());
+					},
+					function(err, result) {
+						expect(result).ok();
+						expect(result).key('updateDate');
+						expect(result.updateDate).a('number');
+
+						entity = result;
+
+						var stepCallback = this.slot();
+						setTimeout(function() {
+							collection.findOneAndUpsert({
+								_id: entity._id
+							}, getUpdateObject(type), stepCallback);
+						}, 10);
+					},
+					function() {
+						collection.findOne(this.slot());
+					},
+					function(err, result) {
+						expect(result).ok();
+						expect(result).key('updateDate');
+						expect(result.updateDate).a('number');
+						expect(result.updateDate).not.equal(entity.updateDate);
+
+						helpers.cleanDb(this.slot());
+					},
+					done
+				);
+			});
+		});
 	});
 
 	after(helpers.cleanDb);
