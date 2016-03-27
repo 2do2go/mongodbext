@@ -1,0 +1,16 @@
+language: node_js
+
+node_js:
+  - "stable"
+  - "4.4"
+  - "0.12"
+  - "0.10"
+
+sudo: false
+
+env:
+  - MONGODB_VERSION=3.2.0
+  - MONGODB_VERSION=3.2.4
+
+script:
+  - npm run travis-test

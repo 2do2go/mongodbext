@@ -1,5 +1,7 @@
 # mongodbext
 
+[![Build Status](https://travis-ci.org/2do2go/mongodbext.svg?branch=master)](https://travis-ci.org/2do2go/mongodbext)
+
 This is extension for [node-mongodb-native](https://github.com/mongodb/node-mongodb-native)
 that imports patched collection object and allows to add hooks on write
 operations, such as insert, update and delete. It also adds some options to this
