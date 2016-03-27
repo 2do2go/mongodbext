@@ -128,83 +128,89 @@ describe('Test updateDate plugin', function() {
 		);
 	});
 
-	describe('Methods, which accept modifier or replacement', function() {
-		var getUpdateObject = function(type) {
-			return type === 'modifier' ? helpers.getModifier() :
-				helpers.getReplacement();
-		};
+	var getUpdateObject = function(type) {
+		return type === 'modifier' ? helpers.getModifier() :
+			helpers.getReplacement();
+	};
 
-		['modifier', 'replacement'].forEach(function(type) {
-			it('updateOne with ' + type + ', should be ok', function(done) {
-				var entity = helpers.getEntity();
-				Steppy(
-					function() {
-						collection.insertOne(entity, this.slot());
-					},
-					function() {
-						var stepCallback = this.slot();
-						setTimeout(function() {
-							collection.updateOne({
-								_id: entity._id
-							}, getUpdateObject(type), stepCallback);
-						}, 10);
-					},
-					function() {
-						collection.findOne(this.slot());
-					},
-					function(err, result) {
-						expect(result).ok();
-						expect(result).key('updateDate');
-						expect(result.updateDate).a('number');
-						expect(result.updateDate).not.equal(entity.updateDate);
+	var itUpdateOneWithType = function(type) {
+		it('make updateOne with ' + type + ', should be ok', function(done) {
+			var entity = helpers.getEntity();
+			Steppy(
+				function() {
+					collection.insertOne(entity, this.slot());
+				},
+				function() {
+					var stepCallback = this.slot();
+					setTimeout(function() {
+						collection.updateOne({
+							_id: entity._id
+						}, getUpdateObject(type), stepCallback);
+					}, 10);
+				},
+				function() {
+					collection.findOne(this.slot());
+				},
+				function(err, result) {
+					expect(result).ok();
+					expect(result).key('updateDate');
+					expect(result.updateDate).a('number');
+					expect(result.updateDate).not.equal(entity.updateDate);
 
-						helpers.cleanDb(this.slot());
-					},
-					done
-				);
-			});
+					helpers.cleanDb(this.slot());
+				},
+				done
+			);
+		});
+	};
 
-			it('findOneAndUpsert with ' + type + ', should be ok', function(done) {
-				var entity = helpers.getEntity();
-				Steppy(
-					function() {
+	itUpdateOneWithType('modifier');
+	itUpdateOneWithType('replacement');
+
+	var itFindOneAndUpsertWithType = function(type) {
+		it('make findOneAndUpsert with ' + type + ', should be ok', function(done) {
+			var entity = helpers.getEntity();
+			Steppy(
+				function() {
+					collection.findOneAndUpsert({
+						_id: entity._id
+					}, getUpdateObject(type), this.slot());
+				},
+				function() {
+					collection.findOne(this.slot());
+				},
+				function(err, result) {
+					expect(result).ok();
+					expect(result).key('updateDate');
+					expect(result.updateDate).a('number');
+
+					entity = result;
+
+					var stepCallback = this.slot();
+					setTimeout(function() {
 						collection.findOneAndUpsert({
 							_id: entity._id
-						}, getUpdateObject(type), this.slot());
-					},
-					function() {
-						collection.findOne(this.slot());
-					},
-					function(err, result) {
-						expect(result).ok();
-						expect(result).key('updateDate');
-						expect(result.updateDate).a('number');
+						}, getUpdateObject(type), stepCallback);
+					}, 10);
+				},
+				function() {
+					collection.findOne(this.slot());
+				},
+				function(err, result) {
+					expect(result).ok();
+					expect(result).key('updateDate');
+					expect(result.updateDate).a('number');
+					expect(result.updateDate).not.equal(entity.updateDate);
 
-						entity = result;
-
-						var stepCallback = this.slot();
-						setTimeout(function() {
-							collection.findOneAndUpsert({
-								_id: entity._id
-							}, getUpdateObject(type), stepCallback);
-						}, 10);
-					},
-					function() {
-						collection.findOne(this.slot());
-					},
-					function(err, result) {
-						expect(result).ok();
-						expect(result).key('updateDate');
-						expect(result.updateDate).a('number');
-						expect(result.updateDate).not.equal(entity.updateDate);
-
-						helpers.cleanDb(this.slot());
-					},
-					done
-				);
-			});
+					helpers.cleanDb(this.slot());
+				},
+				done
+			);
 		});
-	});
+	};
+
+	itFindOneAndUpsertWithType('modifier');
+	itFindOneAndUpsertWithType('replacement');
 
 	after(helpers.cleanDb);
 });
