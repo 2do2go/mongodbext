@@ -11,7 +11,7 @@
 	],
 	"scripts": {
 		"test": "mocha --reporter spec --bail --recursive",
-		"travis-test": "node scripts/mongodbInit.js && npm run test"
+		"testTravis": "node scripts/mongodbInit.js && npm run test"
 	},
 	"main": "./lib/mongodbext",
 	"dependencies": {

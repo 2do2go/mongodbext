@@ -1,7 +1,9 @@
+'use strict';
+
 var Steppy = require('twostep').Steppy,
 	path = require('path'),
 	ServerManager = require('mongodb-topology-manager').Server,
-	m = require('mongodb-version-manager');
+	versionManager = require('mongodb-version-manager');
 
 var nodeify = function(promise, callback) {
 	return promise.then(function (res) {
@@ -18,10 +20,10 @@ var manager = new ServerManager('mongod', {
 Steppy(
 	function() {
 		console.log('init mongodb');
-		m(this.slot());
+		versionManager(this.slot());
 	},
 	function() {
-		m.current(this.slot());
+		versionManager.current(this.slot());
 	},
 	function(err, version) {
 		console.log('mongodb version: %s', version);
@@ -32,10 +34,7 @@ Steppy(
 		nodeify(manager.start(), this.slot());
 	},
 	function(err) {
-		if (err) {
-			console.error(err.stack || err);
-			return process.exit(1);
-		}
+		if (err) throw (err);
 
 		console.log('mongodb started');
 		process.exit(0);

@@ -13,4 +13,4 @@ env:
   - MONGODB_VERSION=3.2.4
 
 script:
-  - npm run travis-test
+  - npm run testTravis
