@@ -6,7 +6,14 @@ var expect = require('expect.js'),
 
 describe('Test sequenceId plugin', function() {
 	var collection,
-		_id;
+		_id,
+		manualId;
+
+	var getSequence = function(callback)  {
+		helpers.getCollection('__sequences').findOne({
+			name: 'test'
+		}, callback);
+	};
 
 	before(function(done) {
 		Steppy(
@@ -15,13 +22,13 @@ describe('Test sequenceId plugin', function() {
 			},
 			function() {
 				collection = helpers.getCollection();
+
 				// get current id value
-				helpers.getCollection('__sequences').findOne({
-					name: 'test'
-				}, this.slot());
+				getSequence(this.slot());
 			},
 			function(err, sequence) {
 				_id = sequence ? sequence.value : 0;
+				manualId = _id + 1000;
 
 				this.pass(null);
 			},
@@ -33,8 +40,8 @@ describe('Test sequenceId plugin', function() {
 		collection.addPlugin('sequenceId');
 	});
 
-	it('with insertOne, should be ok', function(done) {
-		var entity = helpers.getEntity();
+	it('with insertOne and object without _id, should be ok', function(done) {
+		var entity = {a: 1};
 		Steppy(
 			function() {
 				collection.insertOne(entity, this.slot());
@@ -56,8 +63,8 @@ describe('Test sequenceId plugin', function() {
 		);
 	});
 
-	it('with insertMany, should be ok', function(done) {
-		var entities = [helpers.getEntity(), helpers.getEntity()];
+	it('with insertMany and objects without _id, should be ok', function(done) {
+		var entities = [{a: 1}, {a: 2}];
 		Steppy(
 			function() {
 				collection.insertMany(entities, this.slot());
@@ -80,5 +87,60 @@ describe('Test sequenceId plugin', function() {
 		);
 	});
 
-	
+	it('with insertOne and object with _id, should be ok', function(done) {
+		var entity = {
+			_id: manualId,
+			a: 1
+		};
+		Steppy(
+			function() {
+				collection.insertOne(entity, this.slot());
+			},
+			function() {
+				collection.findOne({_id: entity._id}, this.slot());
+
+				getSequence(this.slot());
+			},
+			function(err, dbEntity, sequence) {
+				expect(dbEntity).eql(entity);
+				expect(sequence.value).equal(_id);
+
+				manualId++;
+
+				helpers.cleanDb(this.slot());
+			},
+			done
+		);
+	});
+
+	it('with insertMany and one object with _id and other without', function(done) {
+		var entities = [{
+			a: 1
+		}, {
+			_id: manualId,
+			a: 2
+		}];
+		Steppy(
+			function() {
+				collection.insertMany(entities, this.slot());
+			},
+			function() {
+				collection.find().sort({_id: 1}).toArray(this.slot());
+
+				getSequence(this.slot());
+			},
+			function(err, dbEntities, sequence) {
+				expect(dbEntities).length(2);
+				expect(dbEntities[0]._id).equal(++_id);
+				expect(dbEntities[1]).eql(entities[1]);
+
+				expect(sequence.value).equal(_id);
+
+				manualId++;
+
+				helpers.cleanDb(this.slot());
+			},
+			done
+		);
+	});
 });
