@@ -60,7 +60,7 @@ describe('Test insertOne', function() {
 					expect(result).an('object');
 					expect(result).only.keys(
 						'result', 'ops', 'insertedCount', 'insertedId',
-						'connection'
+						'connection', 'message'
 					);
 					expect(result.ops).eql([entity]);
 					expect(result.result).eql({ok: 1, n: 1});
