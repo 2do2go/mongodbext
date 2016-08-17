@@ -78,7 +78,7 @@ describe('Test updateMany', function() {
 					expect(result).ok();
 					expect(result).only.keys(
 						'connection', 'result', 'matchedCount', 'modifiedCount',
-						'upsertedId', 'upsertedCount'
+						'upsertedId', 'upsertedCount', 'message'
 					);
 					this.pass(null);
 				},
