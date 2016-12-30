@@ -221,9 +221,7 @@ describe('Test updateMany', function() {
 				},
 				modifier = helpers.getModifier(),
 				collection = helpers.getCollection({
-					beforeUpdateMany: function(params, callback) {
-						callback(new Error('Before hook error'));
-					},
+					beforeUpdateMany: helpers.beforeHookWithError,
 					error: function(params, callback) {
 						expect(params.condition).eql(condition);
 						expect(params.modifier).eql(modifier);
@@ -243,7 +241,7 @@ describe('Test updateMany', function() {
 				},
 				function(err) {
 					expect(err).ok();
-					expect(err.message).eql('Before hook error');
+					expect(err.message).eql(helpers.beforeHookErrorMessage);
 					expect(err.hookCalled).ok();
 
 					Steppy(

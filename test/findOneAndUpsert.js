@@ -295,9 +295,7 @@ describe('Test findOneAndUpsert', function() {
 				},
 				modifier = helpers.getModifier(),
 				collection = helpers.getCollection({
-					beforeUpsertOne: function(params, callback) {
-						callback(new Error('Before error hook'));
-					},
+					beforeUpsertOne: helpers.beforeHookWithError,
 					error: function(params, callback) {
 						expect(params.condition).eql(condition);
 						expect(params.modifier).eql(modifier);
@@ -317,7 +315,7 @@ describe('Test findOneAndUpsert', function() {
 				},
 				function(err) {
 					expect(err).ok();
-					expect(err.message).eql('Before error hook');
+					expect(err.message).eql(helpers.beforeHookErrorMessage);
 					expect(err.hookCalled).ok();
 
 					Steppy(

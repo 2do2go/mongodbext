@@ -74,6 +74,21 @@ exports.getReplacement = function() {
 	return {b: 1};
 };
 
+exports.getUpdateObject = function(type) {
+	return type === 'modifier' ? exports.getModifier() :
+		exports.getReplacement();
+};
+
+exports.getHookName = function(type, operation) {
+	return type + operation.charAt(0).toUpperCase() + operation.substr(1);
+};
+
+exports.beforeHookErrorMessage = 'Before hook error';
+
+exports.beforeHookWithError = function(params, callback) {
+	callback(new Error(exports.beforeHookErrorMessage));
+};
+
 exports.getUpdateOneHooksDescribe = function(params) {
 	var method = params.method;
 	describe('hooks', function() {
@@ -190,9 +205,7 @@ exports.getUpdateOneHooksDescribe = function(params) {
 				},
 				modifier = exports.getModifier(),
 				collection = exports.getCollection({
-					beforeUpdateOne: function(params, callback) {
-						callback(new Error('Before hook error'));
-					},
+					beforeUpdateOne: exports.beforeHookWithError,
 					error: function(params, callback) {
 						expect(params.condition).eql(condition);
 						expect(params.modifier).eql(modifier);
@@ -212,7 +225,7 @@ exports.getUpdateOneHooksDescribe = function(params) {
 				},
 				function(err) {
 					expect(err).ok();
-					expect(err.message).eql('Before hook error');
+					expect(err.message).eql(exports.beforeHookErrorMessage);
 					expect(err.hookCalled).ok();
 
 					Steppy(
@@ -365,9 +378,7 @@ exports.getDeleteOneHooksDescribe = function(params) {
 					_id: entity._id
 				},
 				collection = exports.getCollection({
-					beforeDeleteOne: function(params, callback) {
-						callback(new Error('Before hook error'));
-					},
+					beforeDeleteOne: exports.beforeHookWithError,
 					error: function(params, callback) {
 						expect(params.condition).eql(condition);
 						expect(params.options).eql({});
@@ -386,7 +397,7 @@ exports.getDeleteOneHooksDescribe = function(params) {
 				},
 				function(err) {
 					expect(err).ok();
-					expect(err.message).eql('Before hook error');
+					expect(err.message).eql(exports.beforeHookErrorMessage);
 					expect(err.hookCalled).ok();
 
 					Steppy(
@@ -529,9 +540,7 @@ exports.getReplaceOneHooksDescribe = function(params) {
 				},
 				replacement = exports.getReplacement(),
 				collection = exports.getCollection({
-					beforeReplaceOne: function(params, callback) {
-						callback(new Error('Before hook error'));
-					},
+					beforeReplaceOne: exports.beforeHookWithError,
 					error: function(params, callback) {
 						expect(params.condition).eql(condition);
 						expect(params.replacement).eql(replacement);
@@ -551,7 +560,7 @@ exports.getReplaceOneHooksDescribe = function(params) {
 				},
 				function(err) {
 					expect(err).ok();
-					expect(err.message).eql('Before hook error');
+					expect(err.message).eql(exports.beforeHookErrorMessage);
 					expect(err.hookCalled).ok();
 
 					Steppy(

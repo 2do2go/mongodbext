@@ -180,9 +180,7 @@ describe('Test deleteMany', function() {
 					}
 				},
 				collection = helpers.getCollection({
-					beforeDeleteMany: function(params, callback) {
-						callback(new Error('Before hook error'));
-					},
+					beforeDeleteMany: helpers.beforeHookWithError,
 					error: function(params, callback) {
 						expect(params.condition).eql(condition);
 						expect(params.options).eql({});
@@ -201,7 +199,7 @@ describe('Test deleteMany', function() {
 				},
 				function(err) {
 					expect(err).ok();
-					expect(err.message).eql('Before hook error');
+					expect(err.message).eql(helpers.beforeHookErrorMessage);
 					expect(err.hookCalled).ok();
 
 					Steppy(

@@ -157,9 +157,7 @@ describe('Test insert many', function() {
 		it('with error hook, should be ok', function(done) {
 			var entities = [helpers.getEntity(), helpers.getEntity()],
 				collection = helpers.getCollection({
-					beforeInsertMany: function(params, callback) {
-						callback(new Error('Before hook error'));
-					},
+					beforeInsertMany: helpers.beforeHookWithError,
 					error: function(params, callback) {
 						expect(params.docs).eql(entities);
 						expect(params.options).eql({});
@@ -175,7 +173,7 @@ describe('Test insert many', function() {
 				},
 				function(err) {
 					expect(err).ok();
-					expect(err.message).eql('Before hook error');
+					expect(err.message).eql(helpers.beforeHookErrorMessage);
 					expect(err.hookCalled).ok();
 
 					Steppy(
