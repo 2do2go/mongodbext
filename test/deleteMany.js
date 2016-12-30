@@ -187,7 +187,9 @@ describe('Test deleteMany', function() {
 						expect(params.condition).eql(condition);
 						expect(params.options).eql({});
 						expect(params.error).ok();
-						callback()
+
+						params.error.hookCalled = true;
+						callback();
 					}
 				});
 			Steppy(
@@ -200,6 +202,7 @@ describe('Test deleteMany', function() {
 				function(err) {
 					expect(err).ok();
 					expect(err.message).eql('Before hook error');
+					expect(err.hookCalled).ok();
 
 					Steppy(
 						function() {

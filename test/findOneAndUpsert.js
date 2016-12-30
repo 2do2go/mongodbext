@@ -288,6 +288,55 @@ describe('Test findOneAndUpsert', function() {
 			);
 		});
 
+		it('should be ok with error hook', function(done) {
+			var entity = helpers.getEntity(),
+				condition = {
+					_id: entity._id
+				},
+				modifier = helpers.getModifier(),
+				collection = helpers.getCollection({
+					beforeUpsertOne: function(params, callback) {
+						callback(new Error('Before error hook'));
+					},
+					error: function(params, callback) {
+						expect(params.condition).eql(condition);
+						expect(params.modifier).eql(modifier);
+						expect(params.options).eql({});
+						expect(params.error).ok();
+
+						params.error.hookCalled = true;
+						callback();
+					}
+				});
+			Steppy(
+				function() {
+					collection.insertOne(entity, this.slot());
+				},
+				function() {
+					collection.findOneAndUpsert(condition, modifier, this.slot());
+				},
+				function(err) {
+					expect(err).ok();
+					expect(err.message).eql('Before error hook');
+					expect(err.hookCalled).ok();
+
+					Steppy(
+						function() {
+							collection.find().sort({_id: 1}).toArray(this.slot());
+						},
+						function(err, result) {
+							expect(result).ok();
+							expect(result).length(1);
+							expect(result).eql([entity]);
+
+							helpers.cleanDb(this.slot());
+						},
+						done
+					);
+				}
+			);
+		});
+
 		after(helpers.cleanDb);
 	});
 

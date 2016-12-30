@@ -148,6 +148,46 @@ describe('Test insertOne', function() {
 			);
 		});
 
+		it('with error hook, should be ok', function(done) {
+			var entity = helpers.getEntity(),
+				collection = helpers.getCollection({
+					beforeInsertOne: function(params, callback) {
+						callback(new Error('Before hook error'));
+					},
+					error: function(params, callback) {
+						expect(params.doc).eql(entity);
+						expect(params.options).eql({});
+						expect(params.error).ok();
+
+						params.error.hookCalled = true;
+						callback();
+					}
+				});
+			Steppy(
+				function() {
+					collection.insertOne(entity, this.slot());
+				},
+				function(err) {
+					expect(err).ok();
+					expect(err.message).eql('Before hook error');
+					expect(err.hookCalled).ok();
+
+					Steppy(
+						function() {
+							collection.find().toArray(this.slot());
+						},
+						function(err, result) {
+							expect(result).ok();
+							expect(result.length).eql(0);
+
+							helpers.cleanDb(this.slot());
+						},
+						done
+					);
+				}
+			);
+		});
+
 		after(helpers.cleanDb);
 	});
 });
