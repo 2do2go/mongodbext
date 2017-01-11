@@ -128,11 +128,6 @@ describe('Test updateDate plugin', function() {
 		);
 	});
 
-	var getUpdateObject = function(type) {
-		return type === 'modifier' ? helpers.getModifier() :
-			helpers.getReplacement();
-	};
-
 	var itUpdateOneWithType = function(type) {
 		it('make updateOne with ' + type + ', should be ok', function(done) {
 			var entity = helpers.getEntity();
@@ -145,7 +140,7 @@ describe('Test updateDate plugin', function() {
 					setTimeout(function() {
 						collection.updateOne({
 							_id: entity._id
-						}, getUpdateObject(type), stepCallback);
+						}, helpers.getUpdateObject(type), stepCallback);
 					}, 10);
 				},
 				function() {
@@ -174,7 +169,7 @@ describe('Test updateDate plugin', function() {
 				function() {
 					collection.findOneAndUpsert({
 						_id: entity._id
-					}, getUpdateObject(type), this.slot());
+					}, helpers.getUpdateObject(type), this.slot());
 				},
 				function() {
 					collection.findOne(this.slot());
@@ -190,7 +185,7 @@ describe('Test updateDate plugin', function() {
 					setTimeout(function() {
 						collection.findOneAndUpsert({
 							_id: entity._id
-						}, getUpdateObject(type), stepCallback);
+						}, helpers.getUpdateObject(type), stepCallback);
 					}, 10);
 				},
 				function() {
