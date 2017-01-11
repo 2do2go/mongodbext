@@ -29,6 +29,8 @@ describe('Test error hook', function() {
 			function(err) {
 				expect(err).ok();
 				expect(err.message).eql(errorHookErrorMessage);
+
+				done();
 			}
 		);
 	});
