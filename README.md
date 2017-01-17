@@ -1117,3 +1117,7 @@ Add createDate to each inserted to collection document
 ###### updateDate
 
 Add updateDate to each updated or replaces document
+
+###### detailedError
+
+Add field `operation` with query info to error object
