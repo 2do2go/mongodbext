@@ -13,7 +13,7 @@
     "trigger"
   ],
   "scripts": {
-    "test": "mocha --reporter spec --bail --recursive"
+    "test": "mocha --reporter spec --bail --timeout 10000 --recursive"
   },
   "main": "./lib/mongodbext",
   "dependencies": {
