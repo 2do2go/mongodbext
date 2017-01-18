@@ -155,6 +155,8 @@ describe('Test insertOne', function() {
 					error: function(params, callback) {
 						expect(params.doc).eql(entity);
 						expect(params.options).eql({});
+						expect(params.method).eql('insertOne');
+						expect(params.namespace).eql(helpers.getNamespace());
 						expect(params.error).ok();
 
 						params.error.hookCalled = true;

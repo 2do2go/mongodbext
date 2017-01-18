@@ -161,6 +161,8 @@ describe('Test insert many', function() {
 					error: function(params, callback) {
 						expect(params.docs).eql(entities);
 						expect(params.options).eql({});
+						expect(params.method).eql('insertMany');
+						expect(params.namespace).eql(helpers.getNamespace());
 						expect(params.error).ok();
 
 						params.error.hookCalled = true;
