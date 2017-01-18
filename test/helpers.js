@@ -3,9 +3,11 @@
 var Client = require('mongodb').MongoClient,
 	Collection = require('../lib/mongodbext').Collection,
 	Steppy = require('twostep').Steppy,
-	expect = require('expect.js'),
-	mongodbUrl = 'mongodb://localhost:27017/mongodbext_test',
-	collectionName = 'test';
+	expect = require('expect.js');
+
+var dbName = 'mongodbext_test',
+	collectionName = 'test',
+	mongodbUrl = 'mongodb://localhost:27017/' + dbName;
 
 var id = 0,
 	db,
@@ -39,6 +41,10 @@ exports.cleanDb = function(callback) {
 	} else {
 		callback();
 	}
+};
+
+var getNamespace = exports.getNamespace = function(name) {
+	return [dbName, name || collectionName].join('.');
 };
 
 exports.getEntity = function() {
@@ -83,10 +89,11 @@ exports.getHookName = function(type, operation) {
 	return type + operation.charAt(0).toUpperCase() + operation.substr(1);
 };
 
-exports.beforeHookErrorMessage = 'Before hook error';
+var beforeHookErrorMessage = exports.beforeHookErrorMessage =
+	'Before hook error';
 
 exports.beforeHookWithError = function(params, callback) {
-	callback(new Error(exports.beforeHookErrorMessage));
+	callback(new Error(beforeHookErrorMessage));
 };
 
 exports.getUpdateOneHooksDescribe = function(params) {
@@ -210,6 +217,8 @@ exports.getUpdateOneHooksDescribe = function(params) {
 						expect(params.condition).eql(condition);
 						expect(params.modifier).eql(modifier);
 						expect(params.options).eql({});
+						expect(params.method).eql(method);
+						expect(params.namespace).eql(getNamespace());
 						expect(params.error).ok();
 
 						params.error.hookCalled = true;
@@ -225,7 +234,7 @@ exports.getUpdateOneHooksDescribe = function(params) {
 				},
 				function(err) {
 					expect(err).ok();
-					expect(err.message).eql(exports.beforeHookErrorMessage);
+					expect(err.message).eql(beforeHookErrorMessage);
 					expect(err.hookCalled).ok();
 
 					Steppy(
@@ -382,6 +391,8 @@ exports.getDeleteOneHooksDescribe = function(params) {
 					error: function(params, callback) {
 						expect(params.condition).eql(condition);
 						expect(params.options).eql({});
+						expect(params.method).eql(method);
+						expect(params.namespace).eql(getNamespace());
 						expect(params.error).ok();
 
 						params.error.hookCalled = true;
@@ -397,7 +408,7 @@ exports.getDeleteOneHooksDescribe = function(params) {
 				},
 				function(err) {
 					expect(err).ok();
-					expect(err.message).eql(exports.beforeHookErrorMessage);
+					expect(err.message).eql(beforeHookErrorMessage);
 					expect(err.hookCalled).ok();
 
 					Steppy(
@@ -472,7 +483,7 @@ exports.getReplaceOneHooksDescribe = function(params) {
 					collection.insertOne(entity, this.slot());
 				},
 				function() {
-					collection.replaceOne(condition, replacement, this.slot());
+					collection[method](condition, replacement, this.slot());
 				},
 				function() {
 					collection.findOne(this.slot());
@@ -514,7 +525,7 @@ exports.getReplaceOneHooksDescribe = function(params) {
 					collection.insertOne(entity, this.slot());
 				},
 				function() {
-					collection.replaceOne(condition, replacement, this.slot());
+					collection[method](condition, replacement, this.slot());
 				},
 				function() {
 					collection.find().sort({_id: 1}).toArray(this.slot());
@@ -545,6 +556,8 @@ exports.getReplaceOneHooksDescribe = function(params) {
 						expect(params.condition).eql(condition);
 						expect(params.replacement).eql(replacement);
 						expect(params.options).eql({});
+						expect(params.method).eql(method);
+						expect(params.namespace).eql(getNamespace());
 						expect(params.error).ok();
 
 						params.error.hookCalled = true;
@@ -556,11 +569,11 @@ exports.getReplaceOneHooksDescribe = function(params) {
 					collection.insertOne(entity, this.slot());
 				},
 				function() {
-					collection.replaceOne(condition, replacement, this.slot());
+					collection[method](condition, replacement, this.slot());
 				},
 				function(err) {
 					expect(err).ok();
-					expect(err.message).eql(exports.beforeHookErrorMessage);
+					expect(err.message).eql(beforeHookErrorMessage);
 					expect(err.hookCalled).ok();
 
 					Steppy(

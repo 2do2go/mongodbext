@@ -184,6 +184,8 @@ describe('Test deleteMany', function() {
 					error: function(params, callback) {
 						expect(params.condition).eql(condition);
 						expect(params.options).eql({});
+						expect(params.method).eql('deleteMany');
+						expect(params.namespace).eql(helpers.getNamespace());
 						expect(params.error).ok();
 
 						params.error.hookCalled = true;

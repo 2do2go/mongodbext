@@ -300,6 +300,8 @@ describe('Test findOneAndUpsert', function() {
 						expect(params.condition).eql(condition);
 						expect(params.modifier).eql(modifier);
 						expect(params.options).eql({});
+						expect(params.method).eql('findOneAndUpsert');
+						expect(params.namespace).eql(helpers.getNamespace());
 						expect(params.error).ok();
 
 						params.error.hookCalled = true;
