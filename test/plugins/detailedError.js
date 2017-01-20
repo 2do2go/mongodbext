@@ -43,7 +43,11 @@ describe('Test detailedError plugin', function() {
 				function(err) {
 					expect(err).ok();
 					expect(err.operation).ok();
-					expect(err.operation.doc).eql(entity);
+					expect(err.operation.namespace).eql(helpers.getNamespace());
+					expect(err.operation.method).eql('insertOne');
+					expect(err.operation.query).eql({
+						doc: entity
+					});
 					expect(err.operation.options).eql({});
 
 					helpers.cleanDb(done);
@@ -71,7 +75,9 @@ describe('Test detailedError plugin', function() {
 				function(err) {
 					expect(err).ok();
 					expect(err.operation).ok();
-					expect(err.operation.docs).eql(entities);
+					expect(err.operation.namespace).eql(helpers.getNamespace());
+					expect(err.operation.method).eql('insertMany');
+					expect(err.operation.query.docs).eql(entities);
 					expect(err.operation.options).ok();
 
 					helpers.cleanDb(done);
@@ -82,7 +88,7 @@ describe('Test detailedError plugin', function() {
 
 	var itUpdateWithError = function(params) {
 		it(
-			params.operation + ' with error in before hook, ' +
+			params.method + ' with error in before hook, ' +
 				'should return error with operation info',
 			function(done) {
 				var condition = {
@@ -96,13 +102,15 @@ describe('Test detailedError plugin', function() {
 					function() {
 						collection.on(params.hookName, helpers.beforeHookWithError);
 
-						collection[params.operation](condition, modifier, this.slot());
+						collection[params.method](condition, modifier, this.slot());
 					},
 					function(err) {
 						expect(err).ok();
 						expect(err.operation).ok();
-						expect(err.operation.condition).eql(condition);
-						expect(err.operation.modifier).eql(modifier);
+						expect(err.operation.namespace).eql(helpers.getNamespace());
+						expect(err.operation.method).eql(params.method);
+						expect(err.operation.query.condition).eql(condition);
+						expect(err.operation.query.modifier).eql(modifier);
 						expect(err.operation.options).eql({});
 
 						done();
@@ -113,25 +121,25 @@ describe('Test detailedError plugin', function() {
 	};
 
 	itUpdateWithError({
-		operation: 'updateOne',
+		method: 'updateOne',
 		hookName: 'beforeUpdateOne'
 	});
 	itUpdateWithError({
-		operation: 'findOneAndUpdate',
+		method: 'findOneAndUpdate',
 		hookName: 'beforeUpdateOne'
 	});
 	itUpdateWithError({
-		operation: 'findOneAndUpsert',
+		method: 'findOneAndUpsert',
 		hookName: 'beforeUpsertOne'
 	});
 	itUpdateWithError({
-		operation: 'updateMany',
+		method: 'updateMany',
 		hookName: 'beforeUpdateMany'
 	});
 
 	var itDeleteWithError = function(params) {
 		it(
-			params.operation + ' with error in before hook, ' +
+			params.method + ' with error in before hook, ' +
 				'should return error with operation info',
 			function(done) {
 				var condition = {
@@ -144,12 +152,14 @@ describe('Test detailedError plugin', function() {
 					function() {
 						collection.on(params.hookName, helpers.beforeHookWithError);
 
-						collection[params.operation](condition, this.slot());
+						collection[params.method](condition, this.slot());
 					},
 					function(err) {
 						expect(err).ok();
 						expect(err.operation).ok();
-						expect(err.operation.condition).eql(condition);
+						expect(err.operation.namespace).eql(helpers.getNamespace());
+						expect(err.operation.method).eql(params.method);
+						expect(err.operation.query.condition).eql(condition);
 						expect(err.operation.options).eql({});
 
 						done();
@@ -160,15 +170,15 @@ describe('Test detailedError plugin', function() {
 	};
 
 	itDeleteWithError({
-		operation: 'deleteOne',
+		method: 'deleteOne',
 		hookName: 'beforeDeleteOne'
 	});
 	itDeleteWithError({
-		operation: 'findOneAndDelete',
+		method: 'findOneAndDelete',
 		hookName: 'beforeDeleteOne'
 	});
 	itDeleteWithError({
-		operation: 'deleteMany',
+		method: 'deleteMany',
 		hookName: 'beforeDeleteMany'
 	});
 
