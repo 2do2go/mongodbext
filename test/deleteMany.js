@@ -58,7 +58,7 @@ describe('Test deleteMany', function() {
 				function(err, result) {
 					expect(result).ok();
 					expect(result).only.keys(
-						'connection', 'result', 'deletedCount'
+						'connection', 'result', 'deletedCount', 'message'
 					);
 					this.pass(null);
 				},
@@ -169,6 +169,53 @@ describe('Test deleteMany', function() {
 					helpers.cleanDb(this.slot());
 				},
 				done
+			);
+		});
+
+		it('with error hook, should be ok', function(done) {
+			var entities = [helpers.getEntity(), helpers.getEntity()],
+				condition = {
+					_id: {
+						$in: [entities[0]._id, entities[1]._id]
+					}
+				},
+				collection = helpers.getCollection({
+					beforeDeleteMany: helpers.beforeHookWithError,
+					error: function(params, callback) {
+						expect(params.condition).eql(condition);
+						expect(params.options).eql({});
+						expect(params.method).eql('deleteMany');
+						expect(params.namespace).eql(helpers.getNamespace());
+						expect(params.error).ok();
+
+						params.error.hookCalled = true;
+						callback();
+					}
+				});
+			Steppy(
+				function() {
+					collection.insertMany(entities, this.slot());
+				},
+				function() {
+					collection.deleteMany(condition, this.slot());
+				},
+				function(err) {
+					expect(err).ok();
+					expect(err.message).eql(helpers.beforeHookErrorMessage);
+					expect(err.hookCalled).ok();
+
+					Steppy(
+						function() {
+							collection.count(this.slot());
+						},
+						function(err, count) {
+							expect(count).eql(2);
+
+							helpers.cleanDb(this.slot());
+						},
+						done
+					);
+				}
 			);
 		});
 	});

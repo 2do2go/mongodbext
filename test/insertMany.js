@@ -154,6 +154,46 @@ describe('Test insert many', function() {
 			);
 		});
 
+		it('with error hook, should be ok', function(done) {
+			var entities = [helpers.getEntity(), helpers.getEntity()],
+				collection = helpers.getCollection({
+					beforeInsertMany: helpers.beforeHookWithError,
+					error: function(params, callback) {
+						expect(params.docs).eql(entities);
+						expect(params.options).eql({});
+						expect(params.method).eql('insertMany');
+						expect(params.namespace).eql(helpers.getNamespace());
+						expect(params.error).ok();
+
+						params.error.hookCalled = true;
+						callback();
+					}
+				});
+			Steppy(
+				function() {
+					collection.insertMany(entities, this.slot());
+				},
+				function(err) {
+					expect(err).ok();
+					expect(err.message).eql(helpers.beforeHookErrorMessage);
+					expect(err.hookCalled).ok();
+
+					Steppy(
+						function() {
+							collection.find().toArray(this.slot());
+						},
+						function(err, result) {
+							expect(result).ok();
+							expect(result.length).eql(0);
+
+							helpers.cleanDb(this.slot());
+						},
+						done
+					);
+				}
+			);
+		});
+
 		after(helpers.cleanDb);
 	});
 });

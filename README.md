@@ -1061,16 +1061,16 @@ Name | Methods | Params fields
 
 Collection class allows to create and use plugins for adding auto-generated fields to documents, for example.
 
-#### addPlugin(plugin, pluginParams)
+#### addPlugin(plugin, options)
 
 Add plugin to collection.
 
 ###### Parameters:
 
 * **plugin**, function | string. It can be either plugin function, or in case of built-in plugins it's name.
-  Plugin function takes collection object as first parameter and optional pluginParams as second
+  Plugin function takes collection object as first parameter and optional options as second
 
-* **pluginParams**, object, null. Params that will be passed to plugin.
+* **options**, object, null. Options that will be passed to plugin.
 
 ###### Examples:
 
@@ -1114,6 +1114,28 @@ Replace mongo-style object _id with number.
 
 Add createDate to each inserted to collection document
 
+**options:**
+
+* `format` - date format that will be used as `createDate`, available values:
+	* `'timestamp'` (default) - integer timestamp date in milliseconds (`.getTime()`)
+	* `'string'` - string date (`.toString()`)
+	* `'ISOString'` - string date in ISO format (`.toISOString()`)
+	* `'ISODate'` - date as Date object (`new Date()`)
+	* `function(date)` - custom user function that should return formatted date
+
 ###### updateDate
 
 Add updateDate to each updated or replaces document
+
+**options:**
+
+* `format` - date format that will be used as `updateDate`, available values:
+	* `'timestamp'` (default) - integer timestamp date in milliseconds (`.getTime()`)
+	* `'string'` - string date (`.toString()`)
+	* `'ISOString'` - string date in ISO format (`.toISOString()`)
+	* `'ISODate'` - date as Date object (`new Date()`)
+	* `function(date)` - custom user function that should return formatted date
+
+###### detailedError
+
+Add field `operation` with query info to error object

@@ -3,9 +3,11 @@
 var Client = require('mongodb').MongoClient,
 	Collection = require('../lib/mongodbext').Collection,
 	Steppy = require('twostep').Steppy,
-	expect = require('expect.js'),
-	mongodbUrl = 'mongodb://localhost:27017/mongodbext_test',
-	collectionName = 'test';
+	expect = require('expect.js');
+
+var dbName = 'mongodbext_test',
+	collectionName = 'test',
+	mongodbUrl = 'mongodb://localhost:27017/' + dbName;
 
 var id = 0,
 	db,
@@ -41,6 +43,10 @@ exports.cleanDb = function(callback) {
 	}
 };
 
+var getNamespace = exports.getNamespace = function(name) {
+	return [dbName, name || collectionName].join('.');
+};
+
 exports.getEntity = function() {
 	return {a: 1, _id: ++id};
 };
@@ -72,7 +78,23 @@ exports.getModifier = function() {
 
 exports.getReplacement = function() {
 	return {b: 1};
-}
+};
+
+exports.getUpdateObject = function(type) {
+	return type === 'modifier' ? exports.getModifier() :
+		exports.getReplacement();
+};
+
+exports.getHookName = function(type, operation) {
+	return type + operation.charAt(0).toUpperCase() + operation.substr(1);
+};
+
+var beforeHookErrorMessage = exports.beforeHookErrorMessage =
+	'Before hook error';
+
+exports.beforeHookWithError = function(params, callback) {
+	callback(new Error(beforeHookErrorMessage));
+};
 
 exports.getUpdateOneHooksDescribe = function(params) {
 	var method = params.method;
@@ -180,6 +202,54 @@ exports.getUpdateOneHooksDescribe = function(params) {
 					exports.cleanDb(this.slot());
 				},
 				done
+			);
+		});
+
+		it('with error hook, should be ok', function(done) {
+			var entity = exports.getEntity(),
+				condition = {
+					_id: entity._id
+				},
+				modifier = exports.getModifier(),
+				collection = exports.getCollection({
+					beforeUpdateOne: exports.beforeHookWithError,
+					error: function(params, callback) {
+						expect(params.condition).eql(condition);
+						expect(params.modifier).eql(modifier);
+						expect(params.options).eql({});
+						expect(params.method).eql(method);
+						expect(params.namespace).eql(getNamespace());
+						expect(params.error).ok();
+
+						params.error.hookCalled = true;
+						callback();
+					}
+				});
+			Steppy(
+				function() {
+					collection.insertOne(entity, this.slot());
+				},
+				function() {
+					collection[method](condition, modifier, this.slot());
+				},
+				function(err) {
+					expect(err).ok();
+					expect(err.message).eql(beforeHookErrorMessage);
+					expect(err.hookCalled).ok();
+
+					Steppy(
+						function() {
+							collection.find().sort({_id: 1}).toArray(this.slot());
+						},
+						function(err, entities) {
+							expect(entities).length(1);
+							expect(entities).eql([entity]);
+
+							exports.cleanDb(this.slot());
+						},
+						done
+					);
+				}
 			);
 		});
 	});
@@ -310,10 +380,57 @@ exports.getDeleteOneHooksDescribe = function(params) {
 				done
 			);
 		});
+
+		it('should be ok with error hook', function(done) {
+			var entity = exports.getEntity(),
+				condition = {
+					_id: entity._id
+				},
+				collection = exports.getCollection({
+					beforeDeleteOne: exports.beforeHookWithError,
+					error: function(params, callback) {
+						expect(params.condition).eql(condition);
+						expect(params.options).eql({});
+						expect(params.method).eql(method);
+						expect(params.namespace).eql(getNamespace());
+						expect(params.error).ok();
+
+						params.error.hookCalled = true;
+						callback();
+					}
+				});
+			Steppy(
+				function() {
+					collection.insertOne(entity, this.slot());
+				},
+				function() {
+					collection[method](condition, this.slot());
+				},
+				function(err) {
+					expect(err).ok();
+					expect(err.message).eql(beforeHookErrorMessage);
+					expect(err.hookCalled).ok();
+
+					Steppy(
+						function() {
+							collection.find().toArray(this.slot());
+						},
+						function(err, result) {
+							expect(result).ok();
+							expect(result).length(1);
+							expect(result).eql([entity]);
+
+							exports.cleanDb(this.slot());
+						},
+						done
+					);
+				}
+			);
+		});
 	});
 };
 
-exports.getReplaceOneHookDescribe = function(params) {
+exports.getReplaceOneHooksDescribe = function(params) {
 	var method = params.method;
 	describe('hooks', function() {
 
@@ -366,7 +483,7 @@ exports.getReplaceOneHookDescribe = function(params) {
 					collection.insertOne(entity, this.slot());
 				},
 				function() {
-					collection.replaceOne(condition, replacement, this.slot());
+					collection[method](condition, replacement, this.slot());
 				},
 				function() {
 					collection.findOne(this.slot());
@@ -408,7 +525,7 @@ exports.getReplaceOneHookDescribe = function(params) {
 					collection.insertOne(entity, this.slot());
 				},
 				function() {
-					collection.replaceOne(condition, replacement, this.slot());
+					collection[method](condition, replacement, this.slot());
 				},
 				function() {
 					collection.find().sort({_id: 1}).toArray(this.slot());
@@ -424,6 +541,55 @@ exports.getReplaceOneHookDescribe = function(params) {
 					exports.cleanDb(this.slot());
 				},
 				done
+			);
+		});
+
+		it('should be ok with error hook', function(done) {
+			var entity = exports.getEntity(),
+				condition = {
+					_id: entity._id
+				},
+				replacement = exports.getReplacement(),
+				collection = exports.getCollection({
+					beforeReplaceOne: exports.beforeHookWithError,
+					error: function(params, callback) {
+						expect(params.condition).eql(condition);
+						expect(params.replacement).eql(replacement);
+						expect(params.options).eql({});
+						expect(params.method).eql(method);
+						expect(params.namespace).eql(getNamespace());
+						expect(params.error).ok();
+
+						params.error.hookCalled = true;
+						callback();
+					}
+				});
+			Steppy(
+				function() {
+					collection.insertOne(entity, this.slot());
+				},
+				function() {
+					collection[method](condition, replacement, this.slot());
+				},
+				function(err) {
+					expect(err).ok();
+					expect(err.message).eql(beforeHookErrorMessage);
+					expect(err.hookCalled).ok();
+
+					Steppy(
+						function() {
+							collection.find().sort({_id: 1}).toArray(this.slot());
+						},
+						function(err, result) {
+							expect(result).ok();
+							expect(result).length(1);
+							expect(result).eql([entity]);
+
+							exports.cleanDb(this.slot());
+						},
+						done
+					);
+				}
 			);
 		});
 	});

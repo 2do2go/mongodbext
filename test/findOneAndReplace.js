@@ -76,7 +76,7 @@ describe('Test findOneAndReplace', function() {
 		after(helpers.cleanDb);
 	});
 
-	helpers.getReplaceOneHookDescribe({
+	helpers.getReplaceOneHooksDescribe({
 		method: 'findOneAndReplace'
 	});
 

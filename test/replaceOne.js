@@ -69,7 +69,7 @@ describe('Test replaceOne', function() {
 					expect(result).ok();
 					expect(result).only.keys(
 						'result', 'connection', 'matchedCount', 'modifiedCount',
-						'upsertedId', 'upsertedCount', 'ops'
+						'upsertedId', 'upsertedCount', 'ops', 'message'
 					);
 
 					this.pass(null);
@@ -81,7 +81,7 @@ describe('Test replaceOne', function() {
 		after(helpers.cleanDb);
 	});
 
-	helpers.getReplaceOneHookDescribe({
+	helpers.getReplaceOneHooksDescribe({
 		method: 'replaceOne'
 	});
 

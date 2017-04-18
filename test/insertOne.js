@@ -60,7 +60,7 @@ describe('Test insertOne', function() {
 					expect(result).an('object');
 					expect(result).only.keys(
 						'result', 'ops', 'insertedCount', 'insertedId',
-						'connection'
+						'connection', 'message'
 					);
 					expect(result.ops).eql([entity]);
 					expect(result.result).eql({ok: 1, n: 1});
@@ -145,6 +145,46 @@ describe('Test insertOne', function() {
 					helpers.cleanDb(this.slot());
 				},
 				done
+			);
+		});
+
+		it('with error hook, should be ok', function(done) {
+			var entity = helpers.getEntity(),
+				collection = helpers.getCollection({
+					beforeInsertOne: helpers.beforeHookWithError,
+					error: function(params, callback) {
+						expect(params.doc).eql(entity);
+						expect(params.options).eql({});
+						expect(params.method).eql('insertOne');
+						expect(params.namespace).eql(helpers.getNamespace());
+						expect(params.error).ok();
+
+						params.error.hookCalled = true;
+						callback();
+					}
+				});
+			Steppy(
+				function() {
+					collection.insertOne(entity, this.slot());
+				},
+				function(err) {
+					expect(err).ok();
+					expect(err.message).eql(helpers.beforeHookErrorMessage);
+					expect(err.hookCalled).ok();
+
+					Steppy(
+						function() {
+							collection.find().toArray(this.slot());
+						},
+						function(err, result) {
+							expect(result).ok();
+							expect(result.length).eql(0);
+
+							helpers.cleanDb(this.slot());
+						},
+						done
+					);
+				}
 			);
 		});
 
