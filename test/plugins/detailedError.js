@@ -86,6 +86,26 @@ describe('Test detailedError plugin', function() {
 		}
 	);
 
+	it('insertOne with not MongoError, should not extend error', function(done) {
+		var message = 'some message';
+		Steppy(
+			function() {
+				collection.on('beforeInsertOne', function(params, callback) {
+					callback(new Error(message));
+				});
+
+				collection.insertOne(helpers.getEntity(), this.slot());
+			},
+			function(err) {
+				expect(err).an(Error);
+				expect(err.message).equal(message);
+				expect(err.operation).not.ok();
+
+				done();
+			}
+		);
+	});
+
 	var itUpdateWithError = function(params) {
 		it(
 			params.method + ' with error in before hook, ' +

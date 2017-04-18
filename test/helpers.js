@@ -3,7 +3,8 @@
 var Client = require('mongodb').MongoClient,
 	Collection = require('../lib/mongodbext').Collection,
 	Steppy = require('twostep').Steppy,
-	expect = require('expect.js');
+	expect = require('expect.js'),
+	MongoError = require('mongodb').MongoError;
 
 var dbName = 'mongodbext_test',
 	collectionName = 'test',
@@ -93,7 +94,7 @@ var beforeHookErrorMessage = exports.beforeHookErrorMessage =
 	'Before hook error';
 
 exports.beforeHookWithError = function(params, callback) {
-	callback(new Error(beforeHookErrorMessage));
+	callback(new MongoError(beforeHookErrorMessage));
 };
 
 exports.getUpdateOneHooksDescribe = function(params) {
