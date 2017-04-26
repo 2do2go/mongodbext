@@ -1110,6 +1110,12 @@ MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
 
 Replace mongo-style object _id with number.
 
+**options:**
+
+* `seqCollectionName` - name of sequences collection ('__sequences' by default)
+* `seqName` - name of sequence (collection name by default)
+* `key` - key in document to set sequence value (`_id` by default)
+
 ###### createDate
 
 Add createDate to each inserted to collection document
@@ -1139,3 +1145,44 @@ Add updateDate to each updated or replaces document
 ###### detailedError
 
 Add field `operation` with query info to error object
+
+###### embeddedDocuments
+
+Replaces each `EmbeddedDocument` instance in inserted/updated object with values, taken from related collections.
+
+You should manually create `EmbeddedDocument` instances and set it to some field in object. Also you could use helper `createEmbeddedBuilder` to create builder function that takes id and return created `EmbeddedDocument`.
+
+**Example:**
+
+``` js
+var MongoClient = require('mongodb').MongoClient;
+var mongodbext = require('mongodbext');
+
+MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+	var embeddedCollection = new mongodbext.Collection(db, 'embeddedCollection');
+
+	var buildEmbedded =
+		mongodbext.Plugins.embeddedDocuments.createEmbeddedBuilder(
+			embeddedCollection,
+			{
+				_id: 1,
+				name: 1
+			}
+		);
+
+	var collection = new mongodbext.Collection(db, 'collection');
+	collection.addPlugin('embeddedDocuments');
+
+	embeddedCollection.insertOne({
+		_id: 1,
+		name: 'test'
+	}, function() {
+		collection.insertOne({
+			embedded: buildEmbedded(1)
+		}, function(err, document) {
+			console.log(document);
+			// {"embedded": {"_id": 1, "name": "test"}}
+		});
+	});
+});
+```
