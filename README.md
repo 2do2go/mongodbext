@@ -1170,22 +1170,57 @@ MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
 		{projection: {_id: 1, name: 1}}
 	);
 
+	var chaptersCol = new mongodbext.Collection(db, 'chapters');
+	var chaptersEmbedder = mongodbext.Plugins.embeddedDocuments.createEmbedder(
+		chaptersCol,
+		{projection: {_id: 1, title: 1}}
+	);
+
 	var booksCol = new mongodbext.Collection(db, 'books');
 	booksCol.addPlugin('embeddedDocuments', {
-		fields: {author: 'authors'},
-		embedders: {authors: authorsEmbedder}
+		embedders: {
+			'author': authorsEmbedder,
+			'chapters.*': chaptersEmbedder
+		}
 	});
 
-	authorsCol.insertOne({
+	var author = {
 		_id: 1,
-		name: 'John Doe'
-	}, function() {
-		booksCol.insertOne({
-			author: 1
-		}, function(err, book) {
-			console.log(book);
-			// {"author": {"_id": 1, "name": "John Doe"}}
+		name: 'John Doe',
+		age: 42
+	};
+
+	var chapters = [{
+		_id: 1,
+		title: 'Chapter 1',
+		page: 6
+	}, {
+		_id: 2,
+		title: 'Chapter 2',
+		page: 100
+	}];
+
+	authorsCol.insertOne(author, function() {
+		chaptersCol.insertMany(chapters, function() {
+			booksCol.insertOne({
+				_id: 1,
+				title: 'Book',
+				author: 1,
+				chapters: [1, 2]
+			}, function(err, book) {
+				console.log(book);
+				// {
+				//   _id: 1,
+				//   title: 'Book',
+				//   author: { _id: 1, name: 'John Doe' },
+				//   chapters: [
+				//     { _id: 1, title: 'Chapter 1' },
+				//     { _id: 2, title: 'Chapter 2' }
+				//   ]
+				// }
+			});
 		});
 	});
 });
+
 ```
