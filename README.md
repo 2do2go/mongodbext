@@ -1148,9 +1148,14 @@ Add field `operation` with query info to error object
 
 ###### embeddedDocuments
 
-Replaces each `EmbeddedDocument` instance in inserted/updated object with values, taken from related collections.
+Replaces each field from `fields` option using `embedder` function from `embedders` option. `embedder` function is a special function that should return instance of `EmbeddedDocument`.
 
-You should manually create `EmbeddedDocument` instances and set it to some field in object. Also you could use helper `createEmbeddedBuilder` to create builder function that takes id and return created `EmbeddedDocument`.
+You could create `embedder` function by your own code or by helper `createEmbedder(collection, options)`.
+
+**options:**
+
+* `fields` - hash of fields that should be embedded, should be specified in format: `{field1: 'embedderName1', field2: 'embedderName2', ...}`
+* `embedders` - hash of embedders, should contain `embedder` for each field from `fields` option.
 
 **Example:**
 
@@ -1159,29 +1164,27 @@ var MongoClient = require('mongodb').MongoClient;
 var mongodbext = require('mongodbext');
 
 MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
-	var embeddedCollection = new mongodbext.Collection(db, 'embeddedCollection');
+	var authorsCol = new mongodbext.Collection(db, 'authors');
+	var authorsEmbedder = mongodbext.Plugins.embeddedDocuments.createEmbedder(
+		authorsCol,
+		{projection: {_id: 1, name: 1}}
+	);
 
-	var buildEmbedded =
-		mongodbext.Plugins.embeddedDocuments.createEmbeddedBuilder(
-			embeddedCollection,
-			{
-				_id: 1,
-				name: 1
-			}
-		);
+	var booksCol = new mongodbext.Collection(db, 'books');
+	booksCol.addPlugin('embeddedDocuments', {
+		fields: {author: 'authors'},
+		embedders: {authors: authorsEmbedder}
+	});
 
-	var collection = new mongodbext.Collection(db, 'collection');
-	collection.addPlugin('embeddedDocuments');
-
-	embeddedCollection.insertOne({
+	authorsCol.insertOne({
 		_id: 1,
-		name: 'test'
+		name: 'John Doe'
 	}, function() {
-		collection.insertOne({
-			embedded: buildEmbedded(1)
-		}, function(err, document) {
-			console.log(document);
-			// {"embedded": {"_id": 1, "name": "test"}}
+		booksCol.insertOne({
+			author: 1
+		}, function(err, book) {
+			console.log(book);
+			// {"author": {"_id": 1, "name": "John Doe"}}
 		});
 	});
 });
