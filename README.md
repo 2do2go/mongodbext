@@ -1154,8 +1154,7 @@ You could create `embedder` function by your own code or by helper `createEmbedd
 
 **options:**
 
-* `fields` - hash of fields that should be embedded, should be specified in format: `{field1: 'embedderName1', field2: 'embedderName2', ...}`
-* `embedders` - hash of embedders, should contain `embedder` for each field from `fields` option.
+* `fields` - hash of fields that should be embedded, should be specified in format: `{field1: 'embedderName1', field2: 'embedderName2', ...}.
 
 **Example:**
 
@@ -1165,22 +1164,19 @@ var mongodbext = require('mongodbext');
 
 MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
 	var authorsCol = new mongodbext.Collection(db, 'authors');
-	var authorsEmbedder = mongodbext.Plugins.embeddedDocuments.createEmbedder(
-		authorsCol,
-		{projection: {_id: 1, name: 1}}
-	);
-
 	var chaptersCol = new mongodbext.Collection(db, 'chapters');
-	var chaptersEmbedder = mongodbext.Plugins.embeddedDocuments.createEmbedder(
-		chaptersCol,
-		{projection: {_id: 1, title: 1}}
-	);
 
 	var booksCol = new mongodbext.Collection(db, 'books');
 	booksCol.addPlugin('embeddedDocuments', {
 		embedders: {
-			'author': authorsEmbedder,
-			'chapters.*': chaptersEmbedder
+			'author': {
+				collection: authorsCol,
+				projection: {_id: 1, name: 1}
+			},
+			'chapters.*': {
+				collection: chaptersCol,
+				projection: {_id: 1, title: 1}
+			}
 		}
 	});
 
