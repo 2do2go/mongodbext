@@ -4,7 +4,7 @@ var expect = require('expect.js'),
 	Steppy = require('twostep').Steppy,
 	helpers = require('../helpers');
 
-describe('Test sequenceId plugin', function() {
+describe('Test sequence plugin', function() {
 	var collection,
 		_id,
 		manualId;
@@ -37,7 +37,7 @@ describe('Test sequenceId plugin', function() {
 	});
 
 	it('add plugin, should be ok', function() {
-		collection.addPlugin('sequenceId');
+		collection.addPlugin('sequence');
 	});
 
 	it('with insertOne and object without _id, should be ok', function(done) {
