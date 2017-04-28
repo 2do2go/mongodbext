@@ -15,7 +15,7 @@
   "scripts": {
     "test": "mocha --reporter spec --bail --timeout 10000 --recursive"
   },
-  "main": "./lib/mongodbext",
+  "main": "./lib/index",
   "dependencies": {
     "mhook": "0.1.1"
   },

@@ -3,7 +3,7 @@
 var expect = require('expect.js'),
 	Steppy = require('twostep').Steppy,
 	helpers = require('./helpers'),
-	Collection = require('../lib/mongodbext').Collection;
+	Collection = require('../lib').Collection;
 
 describe('Test collection constructor', function() {
 	var db,

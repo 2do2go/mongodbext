@@ -1,7 +1,7 @@
 'use strict';
 
 var Client = require('mongodb').MongoClient,
-	Collection = require('../lib/mongodbext').Collection,
+	Collection = require('../lib').Collection,
 	Steppy = require('twostep').Steppy,
 	expect = require('expect.js'),
 	MongoError = require('mongodb').MongoError;
