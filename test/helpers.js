@@ -445,9 +445,10 @@ exports.getReplaceOneHooksDescribe = function(params) {
 				replacement = exports.getReplacement(),
 				collection = exports.getCollection();
 
-			var expectedResult = Object.assign({
+			var expectedResult = {
+				b: 1,
 				_id: entity._id
-			}, replacement);
+			};
 
 			Steppy(
 				function() {
@@ -487,10 +488,11 @@ exports.getReplaceOneHooksDescribe = function(params) {
 					}
 				});
 
-			var expectedResult = Object.assign({
+			var expectedResult = {
 				_id: entity._id,
+				b: 1,
 				c: 1
-			}, replacement);
+			};
 
 			Steppy(
 				function() {
