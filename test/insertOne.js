@@ -4,6 +4,8 @@ var expect = require('expect.js'),
 	Steppy = require('twostep').Steppy,
 	helpers = require('./helpers');
 
+var mongodb = require('mongodb');
+
 describe('Test insertOne', function() {
 
 	before(helpers.dbConnect);

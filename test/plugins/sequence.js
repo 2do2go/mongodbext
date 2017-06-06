@@ -42,6 +42,7 @@ describe('Test sequence plugin', function() {
 
 	it('with insertOne and object without _id, should be ok', function(done) {
 		var entity = {a: 1};
+
 		Steppy(
 			function() {
 				collection.insertOne(entity, this.slot());
@@ -51,11 +52,11 @@ describe('Test sequence plugin', function() {
 			},
 			function(err, result) {
 				_id++;
-			
+
 				expect(result).ok();
 				expect(result._id).a('number');
 				expect(result._id).equal(_id);
-				expect(result).eql(entity);
+				expect(result.a).eql(entity.a);
 
 				helpers.cleanDb(this.slot());
 			},
@@ -74,12 +75,12 @@ describe('Test sequence plugin', function() {
 			},
 			function(err, result) {
 				expect(result).ok();
-				result.forEach(function(obj) {
+				result.forEach(function(obj, index) {
 					_id++;
 					expect(obj._id).a('number');
 					expect(obj._id).equal(_id);
+					expect(obj.a).equal(entities[index].a);
 				});
-				expect(result).eql(entities);
 
 				helpers.cleanDb(this.slot());
 			},

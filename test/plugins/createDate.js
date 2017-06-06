@@ -48,7 +48,7 @@ var describeCheckPlugin = function(params) {
 					if (params.createDateRegExp) {
 						expect(result.createDate).match(params.createDateRegExp);
 					}
-					expect(result).eql(entity);
+					expect(result._id).eql(entity._id);
 
 					helpers.cleanDb(this.slot());
 				},
@@ -67,14 +67,14 @@ var describeCheckPlugin = function(params) {
 				},
 				function(err, result) {
 					expect(result).ok();
-					result.forEach(function(obj) {
+					result.forEach(function(obj, index) {
 						expect(obj.createDate).ok();
 						expect(obj.createDate).to.be.a(params.createDateType);
 						if (params.createDateRegExp) {
 							expect(obj.createDate).match(params.createDateRegExp);
 						}
+						expect(obj._id).eql(entities[index]._id);
 					});
-					expect(result).eql(entities);
 
 					helpers.cleanDb(this.slot());
 				},

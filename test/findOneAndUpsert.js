@@ -188,7 +188,7 @@ describe('Test findOneAndUpsert', function() {
 						expect(params.condition).eql(condition);
 						expect(params.modifier).eql(modifier);
 						expect(params.options).eql({});
-						modifier.$inc.b = 1;
+						params.modifier.$inc.b = 1;
 						callback();
 					}
 				});

@@ -136,7 +136,9 @@ exports.getUpdateOneHooksDescribe = function(params) {
 						expect(params.modifier).eql(modifier);
 						expect(params.condition).eql(condition);
 						expect(params.options).eql({});
-						modifier.$inc.b = 1;
+
+						params.modifier.$inc.b = 1;
+
 						callback();
 					}
 				});
@@ -440,23 +442,26 @@ exports.getReplaceOneHooksDescribe = function(params) {
 				condition = {
 					_id: entity._id
 				},
-				replacer = exports.getReplacement(),
+				replacement = exports.getReplacement(),
 				collection = exports.getCollection();
+
+			var expectedResult = Object.assign({
+				_id: entity._id
+			}, replacement);
+
 			Steppy(
 				function() {
 					collection.insertOne(entity, this.slot());
 				},
 				function() {
-					collection[method](condition, replacer, this.slot());
+					collection[method](condition, replacement, this.slot());
 				},
 				function() {
 					collection.findOne(this.slot());
 				},
 				function(err, result) {
-					replacer._id = entity._id;
-
 					expect(result).ok();
-					expect(result).eql(replacer);
+					expect(result).eql(expectedResult);
 
 					exports.cleanDb(this.slot());
 				},
@@ -475,10 +480,18 @@ exports.getReplaceOneHooksDescribe = function(params) {
 						expect(params.condition).eql(condition);
 						expect(params.replacement).eql(replacement);
 						expect(params.options).eql({});
-						replacement.c = 1;
+
+						params.replacement.c = 1;
+
 						callback();
 					}
 				});
+
+			var expectedResult = Object.assign({
+				_id: entity._id,
+				c: 1
+			}, replacement);
+
 			Steppy(
 				function() {
 					collection.insertOne(entity, this.slot());
@@ -490,11 +503,8 @@ exports.getReplaceOneHooksDescribe = function(params) {
 					collection.findOne(this.slot());
 				},
 				function(err, result) {
-					replacement._id = entity._id;
-					replacement.c = 1;
-
 					expect(result).ok();
-					expect(result).eql(replacement);
+					expect(result).eql(expectedResult);
 
 					exports.cleanDb(this.slot());
 				},
