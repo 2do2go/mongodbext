@@ -19,7 +19,7 @@
   "main": "./lib/index",
   "dependencies": {
     "is-plain-object": "2.0.3",
-    "mhook": "0.1.1"
+    "mhook": "github:fleg/node-mhook"
   },
   "peerDependencies": {
     "mongodb": ">=2.0"
