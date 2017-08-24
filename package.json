@@ -27,7 +27,7 @@
   "devDependencies": {
     "expect.js": "0.3.1",
     "jshint": "2.4.4",
-    "mocha": "2.0.1",
+    "mocha": "3.5.0",
     "mongodb": ">=2.0",
     "twostep": "0.4.1"
   }

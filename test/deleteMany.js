@@ -55,7 +55,7 @@ describe('Test deleteMany', function() {
 						returnResultOnly: false
 					}, this.slot());
 				},
-				function(err, result) {console.log(Object.keys(result))
+				function(err, result) {
 					expect(result).ok();
 					expect(result).only.keys(
 						'connection', 'result', 'deletedCount', 'message'
