@@ -114,34 +114,37 @@ describe('Test sequence plugin', function() {
 		);
 	});
 
-	it('with insertMany and one object with _id and other without', function(done) {
-		var entities = [{
-			a: 1
-		}, {
-			_id: manualId,
-			a: 2
-		}];
-		Steppy(
-			function() {
-				collection.insertMany(entities, this.slot());
-			},
-			function() {
-				collection.find().sort({_id: 1}).toArray(this.slot());
+	it(
+		'with insertMany and one object with _id and other without',
+		function(done) {
+			var entities = [{
+				a: 1
+			}, {
+				_id: manualId,
+				a: 2
+			}];
+			Steppy(
+				function() {
+					collection.insertMany(entities, this.slot());
+				},
+				function() {
+					collection.find().sort({_id: 1}).toArray(this.slot());
 
-				getSequence(this.slot());
-			},
-			function(err, dbEntities, sequence) {
-				expect(dbEntities).length(2);
-				expect(dbEntities[0]._id).equal(++_id);
-				expect(dbEntities[1]).eql(entities[1]);
+					getSequence(this.slot());
+				},
+				function(err, dbEntities, sequence) {
+					expect(dbEntities).length(2);
+					expect(dbEntities[0]._id).equal(++_id);
+					expect(dbEntities[1]).eql(entities[1]);
 
-				expect(sequence.value).equal(_id);
+					expect(sequence.value).equal(_id);
 
-				manualId++;
+					manualId++;
 
-				helpers.cleanDb(this.slot());
-			},
-			done
-		);
-	});
+					helpers.cleanDb(this.slot());
+				},
+				done
+			);
+		}
+	);
 });
