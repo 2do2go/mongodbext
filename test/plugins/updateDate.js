@@ -65,7 +65,7 @@ var describeCheckPlugin = function(params) {
 				},
 				function(err, result) {
 					expect(result).ok();
-					result.forEach(function(obj, ind) {
+					result.forEach(function(obj) {
 						expect(obj.updateDate).ok();
 						expect(obj.updateDate).to.be.a(params.updateDateType);
 						if (params.updateDateRegExp) {

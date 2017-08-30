@@ -20,44 +20,50 @@ describe('Test findOneAndUpsert', function() {
 			collection = helpers.getCollection();
 		});
 
-		it('should create new record with condition for unexisting entity', function(done) {
-			Steppy(
-				function() {
-					collection.findOneAndUpsert(condition, modifier, this.slot());
-				},
-				function() {
-					collection.findOne(this.slot());
-				},
-				function(err, result) {
-					expect(result).ok();
-					expect(result).eql(entity);
+		it(
+			'should create new record with condition for unexisting entity',
+			function(done) {
+				Steppy(
+					function() {
+						collection.findOneAndUpsert(condition, modifier, this.slot());
+					},
+					function() {
+						collection.findOne(this.slot());
+					},
+					function(err, result) {
+						expect(result).ok();
+						expect(result).eql(entity);
 
-					this.pass(null);
-				},
-				done
-			);
-		});
+						this.pass(null);
+					},
+					done
+				);
+			}
+		);
 
-		it('should update record with condition with existing entity', function(done) {
-			Steppy(
-				function() {
-					collection.findOneAndUpsert(condition, modifier, this.slot());
-				},
-				function() {
-					collection.find().toArray(this.slot());
-				},
-				function(err, result) {
-					entity.a++;
+		it(
+			'should update record with condition with existing entity',
+			function(done) {
+				Steppy(
+					function() {
+						collection.findOneAndUpsert(condition, modifier, this.slot());
+					},
+					function() {
+						collection.find().toArray(this.slot());
+					},
+					function(err, result) {
+						entity.a++;
 
-					expect(result).ok();
-					expect(result).an('array');
-					expect(result).eql([entity]);
+						expect(result).ok();
+						expect(result).an('array');
+						expect(result).eql([entity]);
 
-					this.pass(null);
-				},
-				done
-			);
-		});
+						this.pass(null);
+					},
+					done
+				);
+			}
+		);
 
 		it('should replace with replacement modifier', function(done) {
 			var replacement = helpers.getReplacement();

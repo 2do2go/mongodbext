@@ -1,0 +1,34 @@
+{
+    "node": true,
+    "newcap": false,
+    "supernew": false,
+    "maxlen": 80,
+    "smarttabs": true,
+    "indent": 1,
+    "globalstrict": true,
+    "strict": true,
+    // suppress warnings about switches with just one case
+    "onecase": true,
+    "nonew": false,
+    "trailing": true,
+    "sub": false,
+    "loopfunc": true,
+    "boss": false,
+    "lastsemic": false,
+    "quotmark": "single",
+    "undef": true,
+    "immed": true,
+    "unused": true,
+    // to support processUtils.execScript
+    "evil": true,
+	"globals": {
+		"JSON": false,
+		"describe": false,
+		"it": false,
+		"before": false,
+		"after": false,
+		"beforeEach": false,
+		"afterEach": false,
+		"Promise": true
+	}
+}
