@@ -73,8 +73,8 @@ describe('Test deleteMany', function() {
 				},
 				function(err, result) {
 					expect(result).ok();
-					expect(result).only.keys(
-						'connection', 'result', 'deletedCount', 'message'
+					expect(result).have.keys(
+						'connection', 'result', 'deletedCount'
 					);
 					this.pass(null);
 				},

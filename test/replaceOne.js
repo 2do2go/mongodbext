@@ -83,9 +83,9 @@ describe('Test replaceOne', function() {
 				},
 				function(err, result) {
 					expect(result).ok();
-					expect(result).only.keys(
+					expect(result).have.keys(
 						'result', 'connection', 'matchedCount', 'modifiedCount',
-						'upsertedId', 'upsertedCount', 'ops', 'message'
+						'upsertedId', 'upsertedCount', 'ops'
 					);
 
 					this.pass(null);

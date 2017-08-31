@@ -74,9 +74,9 @@ describe('Test insertOne', function() {
 				function(err, result) {
 					expect(result).ok();
 					expect(result).an('object');
-					expect(result).only.keys(
+					expect(result).have.keys(
 						'result', 'ops', 'insertedCount', 'insertedId',
-						'connection', 'message'
+						'connection'
 					);
 					expect(result.ops).eql([entity]);
 					expect(result.result).eql({ok: 1, n: 1});

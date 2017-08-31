@@ -88,9 +88,9 @@ describe('Test updateOne', function() {
 				},
 				function(err, result) {
 					expect(result).ok();
-					expect(result).only.keys(
+					expect(result).have.keys(
 						'connection', 'result', 'matchedCount', 'modifiedCount',
-						'upsertedId', 'upsertedCount', 'message'
+						'upsertedId', 'upsertedCount'
 					);
 					this.pass(null);
 				},
