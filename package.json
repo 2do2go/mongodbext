@@ -19,7 +19,7 @@
   "main": "./lib/index",
   "dependencies": {
     "is-plain-object": "2.0.3",
-    "mhook": "0.1.1"
+    "mhook": "1.0.0"
   },
   "peerDependencies": {
     "mongodb": ">=2.0"
@@ -27,7 +27,7 @@
   "devDependencies": {
     "expect.js": "0.3.1",
     "jshint": "2.4.4",
-    "mocha": "2.0.1",
+    "mocha": "3.5.0",
     "mongodb": ">=2.0",
     "twostep": "0.4.1"
   }

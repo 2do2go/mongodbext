@@ -8,6 +8,22 @@ describe('Test deleteOne', function() {
 
 	before(helpers.dbConnect);
 
+	describe('promise functionality', function() {
+		var collection;
+
+		before(function() {
+			collection = helpers.getCollection();
+		});
+
+		it('without callback should return a Promise', function() {
+			expect(collection.deleteOne(
+				helpers.getEntity()
+			)).to.be.a(Promise);
+		});
+
+		after(helpers.cleanDb);
+	});
+
 	describe('returnResultOnly option', function() {
 		var collection,
 			condition = {

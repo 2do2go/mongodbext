@@ -8,6 +8,22 @@ describe('Test insert many', function() {
 
 	before(helpers.dbConnect);
 
+	describe('promise functionality', function() {
+		var collection;
+
+		before(function() {
+			collection = helpers.getCollection();
+		});
+
+		it('without callback should return a Promise', function() {
+			expect(collection.insertMany(
+				[helpers.getEntity(), helpers.getEntity()]
+			)).to.be.a(Promise);
+		});
+
+		after(helpers.cleanDb);
+	});
+
 	describe('returnDocsOnly option', function() {
 		var collection;
 

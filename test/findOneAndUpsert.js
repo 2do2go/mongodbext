@@ -8,6 +8,22 @@ describe('Test findOneAndUpsert', function() {
 
 	before(helpers.dbConnect);
 
+	describe('promise functionality', function() {
+		var collection;
+
+		before(function() {
+			collection = helpers.getCollection();
+		});
+
+		it('without callback should return a Promise', function() {
+			expect(collection.findOneAndUpsert(
+				helpers.getEntity(), helpers.getModifier()
+			)).to.be.a(Promise);
+		});
+
+		after(helpers.cleanDb);
+	});
+
 	describe('base functionality', function() {
 		var collection,
 			entity = helpers.getEntity(),
