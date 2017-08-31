@@ -29,6 +29,6 @@
     "jshint": "2.4.4",
     "mocha": "3.5.0",
     "mongodb": ">=2.0",
-    "twostep": "0.4.1"
+    "twostep": "0.4.2"
   }
 }
