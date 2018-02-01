@@ -19,7 +19,7 @@
   "main": "./lib/index",
   "dependencies": {
     "is-plain-object": "2.0.3",
-    "mhook": "1.0.0"
+    "mhook": "1.0.1"
   },
   "peerDependencies": {
     "mongodb": ">=2.0"
