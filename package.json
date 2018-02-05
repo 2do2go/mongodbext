@@ -22,7 +22,7 @@
     "mhook": "1.0.1"
   },
   "peerDependencies": {
-    "mongodb": "2.x.x"
+    "mongodb": "2.x.x || 3.x.x"
   },
   "devDependencies": {
     "expect.js": "0.3.1",
