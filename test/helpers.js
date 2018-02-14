@@ -1,6 +1,6 @@
 'use strict';
 
-var Client = require('mongodb').MongoClient,
+var MongoClient = require('mongodb').MongoClient,
 	Collection = require('../lib').Collection,
 	Steppy = require('twostep').Steppy,
 	expect = require('expect.js'),
@@ -18,14 +18,23 @@ exports.dbConnect = function(callback) {
 	Steppy(
 		function() {
 			if (!dbConnected) {
-				Client.connect(mongodbUrl, this.slot());
+				MongoClient.connect(mongodbUrl, this.slot());
 			} else {
 				this.pass(null);
 			}
 		},
-		function(err, _db) {
+		function(err, dbOrClient) {
 			if (!dbConnected) {
-				db = _db;
+				// mongodb driver 2.x passes `db`, 3.x passes `client` to the
+				// `MongoClient.connect` callback, so we need to detect what
+				// was passed
+				if (dbOrClient.collection) {
+					db = dbOrClient;
+				} else {
+					var client = dbOrClient;
+					db = client.db(dbName);
+				}
+
 				dbConnected = true;
 			}
 
