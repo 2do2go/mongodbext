@@ -157,9 +157,15 @@ var describeCheckPlugin = function(params) {
 					function() {
 						var stepCallback = this.slot();
 						setTimeout(function() {
-							collection.updateOne({
-								_id: entity._id
-							}, helpers.getUpdateObject(type), stepCallback);
+							if (type === 'modifier') {
+								collection.updateOne({
+									_id: entity._id
+								}, helpers.getModifier(), stepCallback);
+							} else {
+								collection.replaceOne({
+									_id: entity._id
+								}, helpers.getReplacement(), stepCallback);
+							}
 						}, params.timeout);
 					},
 					function() {
