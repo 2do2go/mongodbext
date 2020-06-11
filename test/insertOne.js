@@ -16,7 +16,7 @@ describe('Test insertOne', function() {
 		});
 
 		it('without callback should return a Promise', function() {
-			expect(collection.insertMany(
+			expect(collection.insertOne(
 				helpers.getEntity()
 			)).to.be.a(Promise);
 		});
