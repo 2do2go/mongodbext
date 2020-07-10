@@ -7,6 +7,8 @@ that imports patched collection object and allows to add hooks on write
 operations, such as insert, update and delete. It also adds some options to this
 operations, that allows to modify operation;s result.
 
+**Important** since version 3.0.0 mongodb drivers of versions 2.x.x are no longer supported.
+
 ## Installation
 
 ```
