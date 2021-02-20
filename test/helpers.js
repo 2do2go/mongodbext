@@ -616,3 +616,16 @@ exports.getReplaceOneHooksDescribe = function(params) {
 		});
 	});
 };
+
+exports.withProp = function(prop) {
+	return function(value) {
+		return function(doc) {
+			var obj = {};
+			obj[prop] = value;
+			return Object.keys(doc).reduce(function(newDoc, key) {
+				newDoc[key] = doc[key];
+				return newDoc;
+			}, obj);
+		};
+	};
+};
