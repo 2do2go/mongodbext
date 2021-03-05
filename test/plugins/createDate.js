@@ -56,6 +56,31 @@ var describeCheckPlugin = function(params) {
 			);
 		});
 
+		it('make insertOne, should skip', function(done) {
+			var entity = params.withCreateDate(helpers.getEntity());
+
+			Steppy(
+				function() {
+					collection.insertOne(entity, this.slot());
+				},
+				function() {
+					collection.findOne(this.slot());
+				},
+				function(err, result) {
+					expect(result).ok();
+					if (params.createDate instanceof Date) {
+						expect(Number(result.createDate)).to.be(Number(params.createDate));
+					} else {
+						expect(result.createDate).to.be(params.createDate);
+					}
+					expect(result._id).eql(entity._id);
+
+					helpers.cleanDb(this.slot());
+				},
+				done
+			);
+		});
+
 		it('make insertMany, should be ok', function(done) {
 			var entities = [helpers.getEntity(), helpers.getEntity()];
 			Steppy(
@@ -82,29 +107,69 @@ var describeCheckPlugin = function(params) {
 			);
 		});
 
+		it('make insertMany, should skip', function(done) {
+			var entities = [helpers.getEntity(), helpers.getEntity()]
+				.map(params.withCreateDate);
+			Steppy(
+				function() {
+					collection.insertMany(entities, this.slot());
+				},
+				function() {
+					collection.find().sort({_id: 1}).toArray(this.slot());
+				},
+				function(err, result) {
+					expect(result).ok();
+					result.forEach(function(obj, index) {
+						if (params.createDate instanceof Date) {
+							expect(Number(obj.createDate)).to.be(Number(params.createDate));
+						} else {
+							expect(obj.createDate).to.be(params.createDate);
+						}
+						expect(obj._id).eql(entities[index]._id);
+					});
+
+					helpers.cleanDb(this.slot());
+				},
+				done
+			);
+		});
+
 		after(helpers.cleanDb);
 	});
 };
 
 describe('Test createDate plugin', function() {
+	var withCreateDate = helpers.withProp('createDate');
+
+	var timestamp = 100500;
+	var withTimestamp = withCreateDate(timestamp);
+
 	describeCheckPlugin({
-		createDateType: 'number'
+		createDateType: 'number',
+		createDate: timestamp,
+		withCreateDate: withTimestamp
 	});
 
 	describeCheckPlugin({
 		pluginOptions: {
 			format: 'timestamp'
 		},
-		createDateType: 'number'
+		createDateType: 'number',
+		createDate: timestamp,
+		withCreateDate: withTimestamp
 	});
 
+	var str = new Date().toString();
 	describeCheckPlugin({
 		pluginOptions: {
 			format: 'string'
 		},
-		createDateType: 'string'
+		createDateType: 'string',
+		createDate: str,
+		withCreateDate: withCreateDate(str)
 	});
 
+	var isoStr = new Date().toISOString();
 	describeCheckPlugin({
 		pluginOptions: {
 			format: 'ISOString'
@@ -114,14 +179,19 @@ describe('Test createDate plugin', function() {
 			'\\d{4}-[01]\\d-[0-3]\\dT' +
 			'[0-2]\\d:[0-5]\\d:[0-5]\\d' +
 			'\\.\\d+([+-][0-2]\\d:[0-5]\\d|Z)'
-		)
+		),
+		createDate: isoStr,
+		withCreateDate: withCreateDate(isoStr)
 	});
 
+	var isoDate = new Date();
 	describeCheckPlugin({
 		pluginOptions: {
 			format: 'ISODate'
 		},
-		createDateType: Date
+		createDateType: Date,
+		createDate: isoDate,
+		withCreateDate: withCreateDate(isoDate)
 	});
 
 	describeCheckPlugin({
@@ -132,6 +202,8 @@ describe('Test createDate plugin', function() {
 			}
 		},
 		createDateType: 'string',
-		createDateRegExp: /^some_special_date_\d+$/
+		createDateRegExp: /^some_special_date_\d+$/,
+		createDate: timestamp,
+		withCreateDate: withTimestamp
 	});
 });
