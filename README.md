@@ -32,6 +32,7 @@ All parameters described as name, type, default value.
 * **options**, object, null. Optional settings.
 
 	* **changeDataMethods**, Array<string>, null. Set supported data changing methods. If not set all methods are supported.
+	* **varyCountByQuery**, boolean, null. Starting from 4.0 MongoDB deprecates `count` method in favor of `countDocuments` and `estimatedDocumentCount`. Setting `varyCountByQuery` to `true` allows you to use under the hood of `count` either `countDocuments` if query predicate exists or `estimatedDocumentCount` if no query predicate provided.
 
 ###### Returns:
 
@@ -78,7 +79,7 @@ were removed from collection class and throw NotSupported error.
 
 * [aggregate(pipeline, options, callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#aggregate)
 * [bulkWrite(operations, options, callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#bulkWrite)
-* [count(query, options, callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#count)
+* [count(query, options, callback)](#count)
 * [createIndex(fieldOrSpec, options, callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#createIndex)
 * [createIndexes(indexSpecs, callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#createIndexes)
 * [deleteMany(filter, options, callback)](#deletemany)
@@ -1032,6 +1033,57 @@ MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
 });
 ```
 
+#### <a name="count"></a>count(query, options, callback)
+
+Returns the count of documents that would match a query.
+
+Does not accept options if varyCountByQuery set to true, use countDocuments or estimatedDocumentCount directly instead.
+
+###### Parameters:
+
+* **query**, object. The Filter used to select the document to upsert. Optional.
+
+* **options**, object, null. Optional settings.
+
+	* **limit**, integer. The maximum number of documents to count.
+
+	* **skip**, integer. The number of documents to skip before counting.
+
+	* **hint**, string or object. An index name hint or specification for the query.
+
+	* **maxTimeMS**, integer. The maximum amount of time to allow the query to run.
+
+	* **readConcern**, string, default to `local`. Specifies the read concern.
+
+* **callback**, function. The command result callback
+
+###### Returns:
+
+Promise if no callback passed
+
+###### Examples:
+
+``` js
+var MongoClient = require('mongodb').MongoClient;
+var Collection = require('mongodbext').Collection;
+var expect = require('expect.js');
+
+MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+	var collection = new Collection(db, 'countExample');
+
+	collection.insertMany([{
+		a: 1
+	}, {
+		a: 2
+	}], function() {
+		collection.count({
+			a: 1
+		}, function(err, countResult) {
+			expect(countResult).equal(1);
+		});
+	});
+});
+```
 
 ### Hooks
 
