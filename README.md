@@ -5,7 +5,7 @@
 This is extension for [node-mongodb-native](https://github.com/mongodb/node-mongodb-native)
 that imports patched collection object and allows to add hooks on write
 operations, such as insert, update and delete. It also adds some options to this
-operations, that allows to modify operation;s result.
+operations, that allows to modify operation's result.
 
 **Important** since version 3.0.0 mongodb drivers of versions 2.x.x are no longer supported.
 
@@ -1036,8 +1036,6 @@ MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
 #### <a name="count"></a>count(query, options, callback)
 
 Returns the count of documents that would match a query.
-
-Does not accept options if varyCountByQuery set to true, use countDocuments or estimatedDocumentCount directly instead.
 
 ###### Parameters:
 

@@ -100,6 +100,23 @@ describe('Test count', function() {
 			);
 		});
 
+		it('with query and options, should return 0', function(done) {
+			Steppy(
+				function() {
+					collection.count({
+						_id: 1
+					}, {
+						limit: 1
+					}, this.slot());
+				},
+				function(err, result) {
+					expect(result).equal(0);
+					this.pass(null);
+				},
+				done
+			);
+		});
+
 		after(helpers.cleanDb);
 	});
 
