@@ -61,13 +61,13 @@ exports.getEntity = function() {
 	return {a: 1, _id: ++id};
 };
 
-exports.getCollection = function(name, hooks) {
+exports.getCollection = function(name, hooks, options) {
 	if (typeof name === 'object') {
 		hooks = name;
 		name = null;
 	}
 
-	var collection = new Collection(db, name || collectionName);
+	var collection = new Collection(db, name || collectionName, options);
 
 	if (hooks) {
 		for (var key in hooks) {
