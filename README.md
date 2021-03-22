@@ -32,7 +32,7 @@ All parameters described as name, type, default value.
 * **options**, object, null. Optional settings.
 
 	* **changeDataMethods**, Array<string>, null. Set supported data changing methods. If not set all methods are supported.
-	* **varyCountByQuery**, boolean, null. Starting from 4.0 MongoDB deprecates `count` method in favor of `countDocuments` and `estimatedDocumentCount`. Setting `varyCountByQuery` to `true` allows you to use under the hood of `count` either `countDocuments` if query predicate exists or `estimatedDocumentCount` if no query predicate provided.
+	* **customCountImplementation**, boolean, null. Starting from 4.0 MongoDB deprecates `count` method in favor of `countDocuments` and `estimatedDocumentCount`. Setting `customCountImplementation` to `true` allows you to use under the hood of `count` either `countDocuments` if query predicate exists or `estimatedDocumentCount` if no query predicate provided.
 
 ###### Returns:
 

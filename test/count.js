@@ -63,12 +63,12 @@ describe('Test count', function() {
 		after(helpers.cleanDb);
 	});
 
-	describe('with varyCountByQuery option', function() {
+	describe('with customCountImplementation option', function() {
 		var collection;
 
 		before(function() {
 			collection = helpers.getCollection('', null, {
-				varyCountByQuery: true
+				customCountImplementation: true
 			});
 		});
 
