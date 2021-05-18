@@ -81,6 +81,56 @@ var describeCheckPlugin = function(params) {
 			);
 		});
 
+		it('make findOneAndUpsert, should be ok', function(done) {
+			var entity = helpers.getEntity();
+
+			Steppy(
+				function() {
+					collection.findOneAndUpsert({_id: entity._id}, entity, this.slot());
+				},
+				function() {
+					collection.findOne(this.slot());
+				},
+				function(err, result) {
+					expect(result).ok();
+					expect(result.createDate).ok();
+					expect(result.createDate).to.be.a(params.createDateType);
+					if (params.createDateRegExp) {
+						expect(result.createDate).match(params.createDateRegExp);
+					}
+					expect(result._id).eql(entity._id);
+
+					helpers.cleanDb(this.slot());
+				},
+				done
+			);
+		});
+
+		it('make findOneAndUpsert, should skip', function(done) {
+			var entity = params.withCreateDate(helpers.getEntity());
+
+			Steppy(
+				function() {
+					collection.findOneAndUpsert({_id: entity._id}, entity, this.slot());
+				},
+				function() {
+					collection.findOne(this.slot());
+				},
+				function(err, result) {
+					expect(result).ok();
+					if (params.createDate instanceof Date) {
+						expect(Number(result.createDate)).to.be(Number(params.createDate));
+					} else {
+						expect(result.createDate).to.be(params.createDate);
+					}
+					expect(result._id).eql(entity._id);
+
+					helpers.cleanDb(this.slot());
+				},
+				done
+			);
+		});
+
 		it('make insertMany, should be ok', function(done) {
 			var entities = [helpers.getEntity(), helpers.getEntity()];
 			Steppy(
