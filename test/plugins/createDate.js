@@ -106,12 +106,16 @@ var describeCheckPlugin = function(params) {
 			);
 		});
 
-		it('make findOneAndUpsert with update operator, should be ok', function(done) {
+		it('make findOneAndUpsert with modifier, should be ok', function(done) {
 			var entity = helpers.getEntity();
 
 			Steppy(
 				function() {
-					collection.findOneAndUpsert({_id: entity._id}, {$set: entity}, this.slot());
+					collection.findOneAndUpsert(
+						{_id: entity._id},
+						{$set: entity},
+						this.slot()
+					);
 				},
 				function() {
 					collection.findOne(this.slot());
@@ -131,12 +135,16 @@ var describeCheckPlugin = function(params) {
 			);
 		});
 
-		it('make findOneAndUpsert with update operator, should skip', function(done) {
+		it('make findOneAndUpsert with modifier, should skip', function(done) {
 			var entity = params.withCreateDate(helpers.getEntity());
 
 			Steppy(
 				function() {
-					collection.findOneAndUpsert({_id: entity._id}, {$set: entity}, this.slot());
+					collection.findOneAndUpsert(
+						{_id: entity._id},
+						{$set: entity},
+						this.slot()
+					);
 				},
 				function() {
 					collection.findOne(this.slot());
