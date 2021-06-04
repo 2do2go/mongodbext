@@ -187,7 +187,7 @@ MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
 });
 ```
 
-#### <a name="deletone"></a>deleteOne(filter, options, callback)
+#### <a name="deleteone"></a>deleteOne(filter, options, callback)
 
 Delete a document on MongoDB
 
