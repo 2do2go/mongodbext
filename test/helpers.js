@@ -103,7 +103,7 @@ var beforeHookErrorMessage = exports.beforeHookErrorMessage =
 	'Before hook error';
 
 exports.beforeHookWithError = function(params, callback) {
-	callback(new MongoError(beforeHookErrorMessage));
+	callback(MongoError.create(beforeHookErrorMessage));
 };
 
 exports.getUpdateOneHooksDescribe = function(params) {
