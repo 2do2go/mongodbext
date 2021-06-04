@@ -74,48 +74,45 @@ MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
 
 ### Collection methods
 
-All methods that marked as deprecated, such as insert, update etc., except for findAndModify,
-were removed from collection class and throw NotSupported error.
+Methods marked as deprecated are not present in documentation.
 
-* [aggregate(pipeline, options, callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#aggregate)
-* [bulkWrite(operations, options, callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#bulkWrite)
+* [aggregate(pipeline, options, callback)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#aggregate)
+* [bulkWrite(operations, options, callback)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#bulkWrite)
 * [count(query, options, callback)](#count)
-* [createIndex(fieldOrSpec, options, callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#createIndex)
-* [createIndexes(indexSpecs, callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#createIndexes)
+* [countDocuments(query, options, callback)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#countDocuments)
+* [createIndex(fieldOrSpec, options, callback)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#createIndex)
+* [createIndexes(indexSpecs, options, callback)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#createIndexes)
 * [deleteMany(filter, options, callback)](#deletemany)
 * [deleteOne(filter, options, callback)](#deleteone)
-* [distinct(key, query, options, callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#distinct)
-* [drop(callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#drop)
-* [dropIndex(indexName, options, callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#dropIndex)
-* [dropIndexes(callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#dropIndexes)
+* [distinct(key, query, options, callback)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#distinct)
+* [drop(options, callback)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#drop)
+* [dropIndex(indexName, options, callback)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#dropIndex)
+* [dropIndexes(options, callback)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#dropIndexes)
+* [estimatedDocumentCount(options, callback)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#estimatedDocumentCount)
 * [find(query, projection)](#find)
-* [findAndModify(query, sort, doc, options, callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#findAndModify)
 * [findOne(query, projection, callback)](#findone)
 * [findOneAndDelete(filter, options, callback)](#findoneanddelete)
 * [findOneAndReplace(filter, replacement, options, callback)](#findoneandreplace)
 * [findOneAndUpdate(filter, update, options, callback)](#findoneandupdate)
 * [findOneAndUpsert(filter, update, options, callback)](#findoneandupsert)
-* [geoHaystackSearch(x, y, options, callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#geoHaystackSearch)
-* [geoNear(x, y, options, callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#geoNear)
-* [group(keys, condition, initial, reduce, finalize, command, options, callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#group)
-* [indexes(callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#indexes)
-* [indexExists(indexes, callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#indexExists)
-* [indexInformation(options, callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#indexInformation)
-* [initializeOrderedBulkOp(options, callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#initializeOrderedBulkOp)
-* [initializeUnorderedBulkOp(options)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#initializeUnorderedBulkOp)
+* [indexes(options, callback)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#indexes)
+* [indexExists(indexes, options, callback)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#indexExists)
+* [indexInformation(options, callback)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#indexInformation)
+* [initializeOrderedBulkOp(options)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#initializeOrderedBulkOp)
+* [initializeUnorderedBulkOp(options)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#initializeUnorderedBulkOp)
 * [insertMany(docs, options, callback)](#insertmany)
 * [insertOne(doc, options, callback)](#insertone)
-* [isCapped(callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#isCapped)
-* [listIndexes(options)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#listIndexes)
-* [mapReduce(map, reduce, options, callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#mapReduce)
-* [options(callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#options)
-* [parallelCollectionScan(options, callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#parallelCollectionScan)
-* [reIndex(callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#reIndex)
-* [rename(newName, options, callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#rename)
+* [isCapped(options, callback)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#isCapped)
+* [listIndexes(options)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#listIndexes)
+* [mapReduce(map, reduce, options, callback)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#mapReduce)
+* [options(options, callback)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#options)
+* [parallelCollectionScan(options, callback)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#parallelCollectionScan)
+* [rename(newName, options, callback)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#rename)
 * [replaceOne(filter, doc, options, callback)](#replaceone)
-* [stats(options, callback)](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#stats)
+* [stats(options, callback)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#stats)
 * [updateMany(filter, update, options, callback)](#updatemany)
 * [updateOne(filter, update, options, callback)](#updateone)
+* [watch(pipeline, options)](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#watch)
 
 #### <a name="deletemany"></a>deleteMany(filter, options, callback)
 
@@ -190,7 +187,7 @@ MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
 });
 ```
 
-#### <a name="deletone"></a>deleteOne(filter, options, callback)
+#### <a name="deleteone"></a>deleteOne(filter, options, callback)
 
 Delete a document on MongoDB
 
@@ -275,7 +272,7 @@ All parameters described as name, type, default value.
 
 ###### Returns:
 
-[Cursor](http://mongodb.github.io/node-mongodb-native/2.2/api/Cursor.html)
+[Cursor](https://mongodb.github.io/node-mongodb-native/3.6/api/Cursor.html)
 
 ###### Examples:
 
