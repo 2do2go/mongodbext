@@ -1162,6 +1162,8 @@ MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
 
 Replace mongo-style object _id with number.
 
+⚠️ Do no work properly with [`findOneAndUpsert()`](#findoneandupsert).
+
 **options:**
 
 * `seqCollectionName` - name of sequences collection ('__sequences' by default)
@@ -1184,6 +1186,8 @@ Add createDate to each inserted to collection document
 ###### updateDate
 
 Add updateDate to each updated or replaces document
+
+⚠️ Do no work properly with [`findOneAndUpsert()`](#findoneandupsert).
 
 **options:**
 
