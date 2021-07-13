@@ -577,6 +577,9 @@ MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
 
 Upsert a single document on MongoDB.
 
+**⚠️ Important**. Use [`findOneAnReplace`](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#findOneAndReplace) and [`findOneAndUpdate`](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#findOneAndUpdate) with `upsert` option under the hood.
+`findOneAndReplace` will be used, if update parameter do not contain any [update operators](https://docs.mongodb.com/v3.6/reference/operator/update/) (basically, fields begins with `$`). It can lead to unexpected behaviour (see [db.collection.findOneAndReplace-upsert](https://docs.mongodb.com/v3.6/reference/method/db.collection.findOneAndReplace/#findoneandreplace-upsert) and [db.collection.update upsert behavior](https://docs.mongodb.com/v3.6/reference/method/db.collection.update/#upsert-behavior) for more info). Because of realization it's **strongly not recommended** using this method on collection with `sequenceId` and `updateDate` plugins.
+
 ###### Parameters:
 
 * **filter**, object. The Filter used to select the document to upsert
