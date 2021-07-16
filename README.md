@@ -1162,7 +1162,7 @@ MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
 
 Replace mongo-style object _id with number.
 
-⚠️ Do not work properly with [`findOneAndUpsert()`](#findoneandupsert).
+⚠️ Do not work with [`findOneAndUpsert()`](#findoneandupsert).
 
 **options:**
 
@@ -1187,7 +1187,7 @@ Add createDate to each inserted to collection document
 
 Add updateDate to each updated or replaces document
 
-⚠️ Do not work properly with [`findOneAndUpsert()`](#findoneandupsert).
+⚠️ Do not work properly with [`findOneAndUpsert()`](#findoneandupsert), `createDate` will be rewrote every time.
 
 **options:**
 
