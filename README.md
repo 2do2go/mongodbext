@@ -577,6 +577,9 @@ MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
 
 Upsert a single document on MongoDB.
 
+**⚠️ Important**. Uses [`findOneAnReplace`](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#findOneAndReplace) and [`findOneAndUpdate`](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#findOneAndUpdate) with `upsert` option under the hood.
+`findOneAndReplace` will be used, if update parameter do not contain any [update operators](https://docs.mongodb.com/v3.6/reference/operator/update/) (basically, fields begins with `$`). It can lead to slightly inconsistent behavior, depending on input data. (see [db.collection.findOneAndReplace-upsert](https://docs.mongodb.com/v3.6/reference/method/db.collection.findOneAndReplace/#findoneandreplace-upsert) and [db.collection.update upsert behavior](https://docs.mongodb.com/v3.6/reference/method/db.collection.update/#upsert-behavior) to clarify behavior difference). Because of realization it's **strongly not recommended** using this method on collection with `sequenceId` and `updateDate` plugins.
+
 ###### Parameters:
 
 * **filter**, object. The Filter used to select the document to upsert
@@ -1159,6 +1162,8 @@ MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
 
 Replace mongo-style object _id with number.
 
+⚠️ Do not work with [`findOneAndUpsert()`](#findoneandupsert).
+
 **options:**
 
 * `seqCollectionName` - name of sequences collection ('__sequences' by default)
@@ -1181,6 +1186,8 @@ Add createDate to each inserted to collection document
 ###### updateDate
 
 Add updateDate to each updated or replaces document
+
+⚠️ Do not work properly with [`findOneAndUpsert()`](#findoneandupsert), `createDate` will be rewrote every time.
 
 **options:**
 
